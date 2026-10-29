@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SuCRIT Summary Versions</title>
+<style>
+:root{
+  --bg:#f3f3f1; --card:#ffffff; --line:#d9d8d3; --line-2:#ebeae6;
+  --ink:#1c1c1a; --ink-2:#55544f; --ink-3:#8a8983; --wire:#c9c8c2;
+  --accent:#2a78d6;
+  --s-solar:#2a78d6; --s-wind:#eb6834; --s-hydro:#1baf7a; --s-bio:#eda100; --s-nuc:#e87ba4;
+  --good:#0ca30c; --bad:#d03b3b;
+  --note:#fff6c8; --note-ink:#6b5a00; --pin:#f2c200;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px 48px}
+.draft{background:#1c1c1a;color:#fff;font-size:12px;padding:6px 16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.draft b{font-weight:600}
+.draft a{color:#fff}
+.draft button{background:var(--pin);border:0;border-radius:4px;padding:2px 10px;font:600 12px inherit;cursor:pointer}
+
+/* version switcher */
+.versions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.vbtn{all:unset;box-sizing:border-box;cursor:pointer;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;gap:12px;align-items:flex-start}
+.vbtn:hover{border-color:var(--ink-3)}
+.vbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.vbtn.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.vbtn .vl{flex:none;width:28px;height:28px;border-radius:50%;background:var(--line-2);display:grid;place-items:center;font-weight:700;font-size:13px}
+.vbtn.on .vl{background:var(--ink);color:#fff}
+.vbtn .vn{font-weight:700;font-size:14px}
+.vbtn .vq{font-size:12.5px;color:var(--ink-2)}
+.vbtn .va{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+
+header.top{display:flex;align-items:center;gap:16px;padding:18px 0 4px;flex-wrap:wrap}
+.logo{width:120px;height:36px;border:1.5px dashed var(--wire);border-radius:6px;display:grid;place-items:center;color:var(--ink-3);font-size:11px;letter-spacing:.06em}
+.titles h1{margin:0;font-size:22px;letter-spacing:-.01em}
+.titles p{margin:2px 0 0;color:var(--ink-2);font-size:13px}
+
+.filters{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;margin-top:12px;border-bottom:1px solid var(--line);display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.fgroup{display:flex;align-items:center;gap:8px}
+.fgroup label{font-size:12px;color:var(--ink-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:6px 11px;border-radius:6px;font:inherit;font-size:13px;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--ink);color:#fff}
+.seg button .est{font-size:10px;opacity:.75;margin-left:3px}
+.asof{margin-left:auto;font-size:12px;color:var(--ink-3)}
+
+.intent{margin-top:16px;font-size:13px;color:var(--ink-2)}
+.intent b{color:var(--ink)}
+section{margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;position:relative}
+.sec-h{display:flex;align-items:baseline;gap:10px;margin:22px 0 8px;flex-wrap:wrap}
+.sec-h h2{margin:0;font-size:16px}
+.sec-h p{margin:0;color:var(--ink-2);font-size:13px}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line);color:var(--ink-2);border-radius:4px;padding:1px 6px;vertical-align:middle}
+.tag.impact{border-color:var(--ink);color:var(--ink)}
+.tag.nat{background:var(--line-2);border-color:var(--line-2)}
+.info{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--wire);color:var(--ink-3);font-size:10px;font-weight:700;cursor:help;vertical-align:middle;margin-left:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chart-h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px}
+.chart-h h3{margin:0;font-size:14.5px}
+.chart-h p{margin:2px 0 0;font-size:12.5px;color:var(--ink-2)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin:6px 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+svg text{font-family:inherit}
+select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+.muted{color:var(--ink-3);font-size:12px}
+.ver{display:none}
+.ver.on{display:block}
+
+/* ---------- A: report card ---------- */
+.ndcA{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:center}
+.ndcA .big{font-size:40px;font-weight:700;letter-spacing:-.02em;line-height:1.05;margin:6px 0 4px}
+.kicker{font-size:12px;color:var(--ink-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.brow{display:grid;grid-template-columns:250px 1fr 210px;gap:18px;align-items:center;padding:14px 0;border-top:1px solid var(--line-2)}
+.brow:first-child{border-top:0;padding-top:4px}
+.brow .bl b{display:block;font-size:14px}
+.brow .bl .bv{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:2px 0}
+.brow .bl .bv.est{font-style:italic}
+.brow .bl .bv small{font-size:13px;font-weight:600;color:var(--ink-2);margin-left:2px}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 10px;border:1px solid}
+.status.good{color:var(--good);border-color:#bfe6bf;background:#f1faf1}
+.status.bad{color:var(--bad);border-color:#f0c4c4;background:#fdf3f3}
+.status.neu{color:var(--ink-2);border-color:var(--line);background:var(--line-2)}
+.pace{font-size:12px;color:var(--ink-2);margin-top:6px}
+.summary ul{margin:8px 0 0;padding-left:18px}
+.summary li{margin-bottom:4px}
+.btn{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--card);border-radius:6px;padding:5px 10px;cursor:pointer}
+.btn:hover{border-color:var(--ink-3)}
+
+/* ---------- B: compare ---------- */
+.heat{width:100%;border-collapse:separate;border-spacing:3px;font-size:13px}
+.heat th{font-size:11.5px;font-weight:600;color:var(--ink-2);text-align:center;padding:4px 6px;vertical-align:bottom;cursor:pointer;user-select:none}
+.heat th:first-child{text-align:left;cursor:default}
+.heat th .dir{display:block;font-weight:400;color:var(--ink-3);font-size:10.5px}
+.heat th.sorted{color:var(--ink)}
+.heat td{text-align:center;padding:9px 6px;border-radius:5px;font-variant-numeric:tabular-nums;font-weight:600}
+.heat td:first-child{text-align:left;font-weight:500;background:none;color:var(--ink-2);white-space:nowrap}
+.heat tr.ref td{background:var(--line-2)!important;color:var(--ink)!important;font-weight:700}
+.heat tr.ref td:first-child{background:none!important}
+.heat tbody tr{cursor:pointer}
+.heat tr.sel td:first-child{color:var(--ink);font-weight:700}
+.heat tr.sel td:first-child::before{content:"▸ "}
+.heat td.na{color:var(--ink-3);font-weight:400;background:repeating-linear-gradient(45deg,#fafaf8 0 4px,#efeee9 4px 6px)}
+.heat td.neu{background:#f6f6f3;color:var(--ink)}
+.heatwrap{overflow-x:auto}
+.ramp{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-3)}
+.ramp span{display:inline-block;width:22px;height:10px}
+
+/* ---------- C: story ---------- */
+.chap{display:grid;grid-template-columns:56px 1fr;gap:14px;margin-top:18px}
+.chap .num{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-weight:700;font-size:15px;background:var(--card)}
+.chap h2{margin:0 0 2px;font-size:22px;letter-spacing:-.01em;line-height:1.2}
+.chap .lede{color:var(--ink-2);margin:0 0 10px;max-width:70ch}
+.wafs{display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start}
+.waf .wn{font-size:34px;font-weight:700;letter-spacing:-.02em}
+.waf .wl{font-size:12.5px;color:var(--ink-2);max-width:190px}
+.comment{margin-top:12px;border-left:3px solid var(--ink);background:#fafaf8;padding:8px 12px;font-size:13px;color:var(--ink-2);border-radius:0 6px 6px 0}
+.comment .cl{display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+#dumb,#cei{max-width:780px;display:block}
+#csto{max-width:900px;display:block}
+.natpill{display:inline-block;font-size:12px;color:var(--ink-2);background:var(--line-2);border-radius:6px;padding:4px 10px;margin-bottom:8px}
+
+footer{margin-top:24px;font-size:12px;color:var(--ink-3)}
+
+/* wireframe notes */
+.pin{position:absolute;top:-9px;left:-9px;width:22px;height:22px;border-radius:50%;background:var(--pin);color:#1c1c1a;font:700 11px/22px inherit;text-align:center;box-shadow:0 0 0 2px var(--bg);z-index:3;cursor:pointer}
+body.nonotes .pin{display:none}
+.notes{position:fixed;right:16px;bottom:16px;width:350px;max-height:62vh;overflow:auto;background:var(--note);color:var(--note-ink);border:1px solid #ecd97a;border-radius:10px;padding:12px 14px;font-size:12.5px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:20}
+body.nonotes .notes{display:none}
+.notes h4{margin:0 0 6px;font-size:13px;color:#4a3e00}
+.notes ol{margin:0;padding-left:20px}
+.notes li{margin-bottom:6px}
+.notes li.hl{background:#ffe98a;border-radius:4px}
+#tip{position:fixed;pointer-events:none;background:#1c1c1a;color:#fff;font-size:12px;padding:6px 9px;border-radius:6px;z-index:30;display:none;max-width:260px;line-height:1.35}
+
+@media (max-width:1000px){.grid2,.ndcA{grid-template-columns:1fr}.brow{grid-template-columns:1fr;gap:6px}.notes{width:auto;left:16px}.versions{grid-template-columns:1fr}}
+@media (max-width:560px){.chap{grid-template-columns:1fr}.chap .num{width:32px;height:32px}.asof{margin-left:0}}
+</style>
+</head>
+<body class="nonotes">
+<div class="draft"><span><b>WIREFRAME · 3 versions to compare</b> · same data, same filters, different ways of showing it.</span></div>
+
+<div class="wrap">
+<header class="top">
+  <div class="logo">SuCRIT LOGO</div>
+  <div class="titles">
+    <h1>India's clean energy transition: state tracker</h1>
+    <p>How India and the six SuCRIT states are moving from fossil to clean power</p>
+  </div>
+</header>
+
+<div class="versions" id="versions" role="tablist" aria-label="Dashboard version"></div>
+
+<div class="filters">
+  <div class="fgroup"><label>State</label><div class="seg" id="geoSeg"></div></div>
+  <div class="fgroup"><label>Year</label><div class="seg" id="yearSeg"></div></div>
+  <div class="asof">Figures as of Aug 2026 · FY basis (2026 = FY 2025-26)</div>
+</div>
+
+<div class="intent" id="intent"></div>
+
+<!-- ================= A: REPORT CARD ================= -->
+<div class="ver" id="vA">
+  <section>
+    <div class="card ndcA">
+      <span class="pin" data-n="1">1</span>
+      <div>
+        <div class="kicker">SuCRIT's headline goal · Indicator 1 <span class="tag nat">National only</span></div>
+        <div class="big" id="aNdcBig"></div>
+        <div style="color:var(--ink-2)" id="aNdcSub"></div>
+      </div>
+      <div>
+        <svg id="aNdc" viewBox="0 0 640 96" width="100%"></svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-h"><h2 id="aTitle"></h2><p>Where things are now, where they're meant to be by 2030, and whether the pace is enough</p></div>
+  <section style="margin-top:0">
+    <div class="card">
+      <span class="pin" data-n="2">2</span>
+      <div class="legend" style="margin:0 0 6px">
+        <span><i style="background:var(--ink)"></i>Now (selected year)</span>
+        <span><i style="background:url(#) ;background-image:repeating-linear-gradient(45deg,#c9c8c2 0 2px,#fff 2px 5px);border:1px solid var(--ink-3)"></i>Still to go to 2030 projection</span>
+        <span><svg width="12" height="11"><path d="M6 1 L11 10 L1 10Z" fill="#fff" stroke="#1c1c1a" stroke-width="1.5"/></svg> Target</span>
+      </div>
+      <div id="aRows"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card summary">
+      <span class="pin" data-n="3">3</span>
+      <div class="chart-h"><div><h3>Ready-to-use summary</h3><p>Plain sentences for a report or slide. They update with the filters.</p></div><button class="btn" id="copySum">Copy text</button></div>
+      <ul id="aSum"></ul>
+    </div>
+  </section>
+</div>
+
+<!-- ================= B: COMPARE ================= -->
+<div class="ver" id="vB">
+  <section>
+    <div class="card">
+      <span class="pin" data-n="1">1</span>
+      <div class="chart-h"><div><h3 id="bHeatTitle"></h3><p>Darker = doing better on that measure, among the six states. Click a column to sort, click a state to pick it.</p></div>
+        <div class="ramp">worse <span style="background:#e6f0fc"></span><span style="background:#9ec5f4"></span><span style="background:#3987e5"></span><span style="background:#184f95"></span> better</div></div>
+      <div class="heatwrap"><table class="heat" id="heat"></table></div>
+    </div>
+  </section>
+
+  <div class="grid2" style="margin-top:12px">
+    <div class="card">
+      <span class="pin" data-n="2">2</span>
+      <div class="chart-h"><div><h3 id="bSlopeTitle"></h3><p id="bSlopeSub"></p></div>
+        <select id="bSel" aria-label="Measure for change chart">
+          <option value="s2a">Clean share of capacity (2A)</option>
+          <option value="gen">Clean share of electricity (3)</option>
+          <option value="ei">CO₂ per unit (3A)</option>
+        </select></div>
+      <svg id="slope" viewBox="0 0 560 300" width="100%"></svg>
+    </div>
+    <div class="card">
+      <span class="pin" data-n="3">3</span>
+      <div class="chart-h"><div><h3 id="bMixTitle"></h3><p>Each bar is 100% of a state's clean capacity, split by source</p></div><span class="tag impact">Indicator 2</span></div>
+      <div class="legend" id="bMixLegend"></div>
+      <svg id="bmix" viewBox="0 0 560 270" width="100%"></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ================= C: STORY ================= -->
+<div class="ver" id="vC">
+  <div class="chap">
+    <div class="num">1</div>
+    <div class="card">
+      <span class="pin" data-n="1">1</span>
+      <h2 id="c1h"></h2>
+      <p class="lede">Out of every 100 units, how many are clean? Power plants on the left, the electricity they actually produce on the right.</p>
+      <div class="wafs" id="c1w"></div>
+      <div class="comment"><span class="cl">Secretariat commentary · draft</span><span id="c1c"></span></div>
+    </div>
+  </div>
+
+  <div class="chap">
+    <div class="num">2</div>
+    <div class="card">
+      <span class="pin" data-n="2">2</span>
+      <h2 id="c2h"></h2>
+      <p class="lede" id="c2l"></p>
+      <svg id="dumb" viewBox="0 0 640 220" width="100%"></svg>
+      <div class="comment"><span class="cl">Secretariat commentary · draft</span><span id="c2c"></span></div>
+    </div>
+  </div>
+
+  <div class="chap">
+    <div class="num">3</div>
+    <div class="card">
+      <span class="pin" data-n="3">3</span>
+      <h2 id="c3h"></h2>
+      <p class="lede">CO₂ released for each unit of electricity used. Lower is better.</p>
+      <svg id="cei" viewBox="0 0 640 220" width="100%"></svg>
+      <div class="comment"><span class="cl">Secretariat commentary · draft</span><span id="c3c"></span></div>
+    </div>
+  </div>
+
+  <div class="chap">
+    <div class="num">4</div>
+    <div class="card">
+      <span class="pin" data-n="4">4</span>
+      <div class="natpill" id="c4nat">National indicator. The story is shown for India.</div>
+      <h2 id="c4h"></h2>
+      <p class="lede">Storage lets solar power be used after sunset. Each square is 1% of all storage ordered since 2023 (batteries and pumped hydro).</p>
+      <svg id="csto" viewBox="0 0 640 74" width="100%"></svg>
+      <div class="legend"><span><i style="background:var(--s-hydro)"></i>Working</span><span><i style="background:var(--line-2);border:1px solid var(--wire)"></i>Ordered, not yet working</span></div>
+      <div class="comment"><span class="cl">Secretariat commentary · draft</span><span id="c4c"></span></div>
+    </div>
+  </div>
+
+  <div class="chap">
+    <div class="num">5</div>
+    <div class="card">
+      <span class="pin" data-n="5">5</span>
+      <h2 id="c6h"></h2>
+      <p class="lede">By law, power companies must buy a rising share of clean power. The dashed line is what the law requires; the solid line is what they actually bought (proxy values until official BEE figures arrive).</p>
+      <svg id="crco" viewBox="0 0 640 210" width="100%"></svg>
+      <div class="comment"><span class="cl">Secretariat commentary · draft</span><span id="c6c"></span></div>
+    </div>
+  </div>
+
+  <div class="chap">
+    <div class="num">6</div>
+    <div class="card">
+      <span class="pin" data-n="6">6</span>
+      <div class="natpill" id="c5nat">National indicator. The goal is set for India as a whole.</div>
+      <h2>The headline goal: on track in the models, not yet measured</h2>
+      <p class="lede">SuCRIT's goal is an extra ~15% cut in emissions per rupee of GDP by 2030, beyond what India would cut anyway. Modelling says 21.7%, but no measured figure exists until India's next climate report (BTR).</p>
+      <svg id="road" viewBox="0 0 960 162" width="100%"></svg>
+      <div class="comment"><span class="cl">Secretariat commentary · draft</span><span id="c5c"></span></div>
+    </div>
+  </div>
+</div>
+
+<footer>Sources: NITI Aayog ICED, CEA CO₂ Baseline Database v22.0, MNRE, IESA, WRI India modelling · compiled by the SuCRIT secretariat partners. Checked against the SuCRIT indicator sheet (agreed indicators, 30 Sept). Commentary text is placeholder written from the data.</footer>
+</div>
+
+
+<div id="tip"></div>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <pattern id="hatchG" width="5" height="5" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#c9c8c2" stroke-width="2"/></pattern>
+</defs></svg>
+
+<script>
+const D = {"National":{"solar":{"2023":66.78,"2024":81.81,"2025":105.65,"2026":150.26,"2030":285.0},"wind":{"2023":42.63,"2024":45.89,"2025":50.04,"2026":56.09,"2030":93.0},"bio":{"2023":10.8,"2024":10.94,"2025":11.58,"2026":11.75,"2030":18.0},"hydro":{"2023":51.79,"2024":51.93,"2025":52.83,"2026":56.59,"2030":58.0},"nuc":{"2023":6.78,"2024":8.18,"2025":8.18,"2026":8.78,"2030":13.0},"total":{"2023":178.79,"2024":198.75,"2025":228.28,"2026":283.47,"2030":500.0},"s2a":{"2023":43.0,"2024":45.0,"2025":48.0,"2026":53.2,"2030":50.0},"s2b":{"2023":93.0,"2024":77.0,"2025":88.8,"2026":95.9,"2030":75.0},"gen":{"2023":25.4,"2024":23.5,"2025":25.2,"2026":29.0,"2030":41.0},"ei":{"2023":716.0,"2024":727.2,"2025":710.1,"2026":675.1,"2030":null},"ndc":{"2023":38.7,"2024":39.6,"2025":40.5,"2026":41.4,"2030":45.0,"2035":47.0}},"Assam":{"solar":{"2023":0.15,"2024":0.16,"2025":0.2,"2026":0.57,"2030":2.74},"wind":{"2023":0.0,"2024":0.0,"2025":0.0,"2026":0.0,"2030":0.5},"bio":{"2023":0.0,"2024":0.0,"2025":0.0,"2026":0.01,"2030":0.0},"hydro":{"2023":0.38,"2024":0.38,"2025":0.38,"2026":0.38,"2030":1.4},"nuc":{"2023":0.0,"2024":0.0,"2025":0.0,"2026":0.0,"2030":0.0},"total":{"2023":0.53,"2024":0.54,"2025":0.58,"2026":0.96,"2030":4.64},"s2a":{"2023":28.4,"2024":28.7,"2025":30.2,"2026":41.6,"2030":64.8},"s2b":{"2023":429.5,"2024":100.0,"2025":100.0,"2026":100.0,"2030":52.4},"gen":{"2023":8.3,"2024":10.6,"2025":15.6,"2026":20.9,"2030":null},"ei":{"2023":708.41,"2024":679.79,"2025":646.87,"2026":620.78,"2030":null}},"Bihar":{"solar":{"2023":0.19,"2024":0.24,"2025":0.33,"2026":0.44,"2030":9.9},"wind":{"2023":0.0,"2024":0.0,"2025":0.0,"2026":0.0,"2030":3.31},"bio":{"2023":0.13,"2024":0.14,"2025":0.14,"2026":0.15,"2030":0.14},"hydro":{"2023":0.07,"2024":0.07,"2025":0.07,"2026":0.07,"2030":1.44},"nuc":{"2023":0.0,"2024":0.0,"2025":0.0,"2026":0.0,"2030":0.0},"total":{"2023":0.39,"2024":0.45,"2025":0.54,"2026":0.65,"2030":14.8},"s2a":{"2023":4.4,"2024":4.7,"2025":5.6,"2026":6.0,"2030":59.5},"s2b":{"2023":100.0,"2024":8.4,"2025":100.0,"2026":9.2,"2030":49.1},"gen":{"2023":0.5,"2024":0.6,"2025":0.7,"2026":0.7,"2030":null},"ei":{"2023":880.19,"2024":877.44,"2025":891.56,"2026":929.93,"2030":null}},"Uttar Pradesh":{"solar":{"2023":2.52,"2024":2.92,"2025":3.36,"2026":4.12,"2030":22.75},"wind":{"2023":0.0,"2024":0.0,"2025":0.0,"2026":0.0,"2030":4.99},"bio":{"2023":2.22,"2024":2.23,"2025":2.31,"2026":2.33,"2030":1.5},"hydro":{"2023":0.55,"2024":0.55,"2025":0.55,"2026":0.55,"2030":4.57},"nuc":{"2023":0.44,"2024":0.44,"2025":0.44,"2026":0.44,"2030":0.45},"total":{"2023":5.72,"2024":6.14,"2025":6.66,"2026":7.45,"2030":34.26},"s2a":{"2023":18.2,"2024":18.6,"2025":18.4,"2026":19.1,"2030":55.3},"s2b":{"2023":146.2,"2024":27.4,"2025":16.6,"2026":28.3,"2030":81.9},"gen":{"2023":7.0,"2024":6.6,"2025":7.2,"2026":7.0,"2030":null},"ei":{"2023":836.89,"2024":835.31,"2025":826.99,"2026":819.95,"2030":null}},"Odisha":{"solar":{"2023":0.45,"2024":0.5,"2025":0.62,"2026":0.88,"2030":4.26},"wind":{"2023":0.0,"2024":0.0,"2025":0.0,"2026":0.0,"2030":2.25},"bio":{"2023":0.06,"2024":0.06,"2025":0.06,"2026":0.06,"2030":0.0},"hydro":{"2023":2.27,"2024":2.27,"2025":2.27,"2026":2.3,"2030":2.89},"nuc":{"2023":0.0,"2024":0.0,"2025":0.0,"2026":0.0,"2030":0.0},"total":{"2023":2.78,"2024":2.83,"2025":2.96,"2026":3.24,"2030":9.39},"s2a":{"2023":22.6,"2024":22.8,"2025":23.6,"2026":24.6,"2030":55.9},"s2b":{"2023":99.4,"2024":100.1,"2025":69.0,"2026":44.8,"2030":59.0},"gen":{"2023":11.3,"2024":10.2,"2025":9.9,"2026":11.3,"2030":null},"ei":{"2023":779.35,"2024":782.82,"2025":778.5,"2026":774.8,"2030":null}},"Maharashtra":{"solar":{"2023":4.72,"2024":6.25,"2025":10.69,"2026":19.62,"2030":45.18},"wind":{"2023":5.01,"2024":5.21,"2025":5.28,"2026":5.93,"2030":2.63},"bio":{"2023":2.64,"2024":2.64,"2025":3.0,"2026":3.0,"2030":3.6},"hydro":{"2023":3.43,"2024":3.43,"2025":3.43,"2026":3.43,"2030":3.46},"nuc":{"2023":1.4,"2024":1.4,"2025":1.4,"2026":1.4,"2030":1.19},"total":{"2023":17.2,"2024":18.93,"2025":23.8,"2026":33.38,"2030":56.06},"s2a":{"2023":38.9,"2024":41.0,"2025":46.1,"2026":56.1,"2030":68.5},"s2b":{"2023":100.0,"2024":92.0,"2025":88.1,"2026":122.2,"2030":91.5},"gen":{"2023":20.2,"2024":19.0,"2025":19.8,"2026":21.1,"2030":null},"ei":{"2023":739.58,"2024":735.21,"2025":718.04,"2026":700.73,"2030":null}},"Tamil Nadu":{"solar":{"2023":6.74,"2024":8.21,"2025":10.15,"2026":13.58,"2030":29.71},"wind":{"2023":10.02,"2024":10.6,"2025":11.74,"2026":12.15,"2030":14.18},"bio":{"2023":1.04,"2024":1.05,"2025":1.05,"2026":1.06,"2030":0.97},"hydro":{"2023":2.3,"2024":2.3,"2025":2.3,"2026":2.33,"2030":1.96},"nuc":{"2023":2.44,"2024":2.44,"2025":2.44,"2026":2.44,"2030":2.68},"total":{"2023":22.54,"2024":24.6,"2025":27.68,"2026":31.55,"2030":49.49},"s2a":{"2023":60.2,"2024":61.6,"2025":64.3,"2026":66.2,"2030":73.2},"s2b":{"2023":100.0,"2024":83.3,"2025":98.0,"2026":84.7,"2030":77.1},"gen":{"2023":42.5,"2024":38.9,"2025":43.0,"2026":49.7,"2030":null},"ei":{"2023":583.22,"2024":603.44,"2025":572.53,"2026":511.14,"2030":null}}};
+D.National.s2a["2030"] = 62.5; D.National.s2aTarget = 50;
+const GEOS = ["National","Assam","Bihar","Uttar Pradesh","Odisha","Maharashtra","Tamil Nadu"];
+const STATES = GEOS.slice(1);
+const YEARS = ["2023","2024","2025","2026"];
+const SRC = [["solar","Solar","--s-solar"],["wind","Wind","--s-wind"],["hydro","Hydro","--s-hydro"],["bio","Biomass","--s-bio"],["nuc","Nuclear","--s-nuc"]];
+const STATE_TARGET = {"Uttar Pradesh":{src:"solar",txt:"22 GW solar by 2026-27 (state policy)",v:22}};
+const STO = {nat:{t:[40,75,106,63],o:[0,0.2,0.8,9.2]},
+  st:{"Assam":{t:null,o:null},"Bihar":{t:0.3,o:0.254},"Uttar Pradesh":{t:0.6,o:0.003},"Odisha":{t:0.5,o:null},"Maharashtra":{t:4.0,o:0.5},"Tamil Nadu":{t:7.5,o:null}}};
+
+const VERSIONS = {
+  a:{n:"Report card", q:"Are we on track for 2030?",
+     intent:"<b>Intention:</b> one honest status per indicator, ready to lift into a report. Uses progress bars, pace checks and plain-sentence summaries.",
+     notes:[]},
+  b:{n:"State comparison", q:"Who's ahead, who's behind, and on what?",
+     intent:"<b>Intention:</b> see all six states at once, spot leaders and laggards, and see who's moving fastest. Uses a heatmap table, a slope chart and 100% bars.",
+     notes:[]},
+  c:{n:"Story", q:"What's changing, and why does it matter?",
+     intent:"<b>Intention:</b> walk a reader through six plain-language chapters, each with one chart and the secretariat's own comment. Uses waffle charts, a dumbbell chart, an annotated line, unit squares and a timeline.",
+     notes:[]}
+};
+
+let geo = "National", year = "2026", ver = (location.hash||"#a").slice(1);
+if(!VERSIONS[ver]) ver = "a";
+let bSort = "s2a";
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const name = g => g==="National" ? "India" : g;
+const isEst = y => y === "2026";
+const yl = y => y + (isEst(y) ? " (estimate)" : "");
+const fmt = (v,u) => v==null ? "—" : u==="%" ? v.toFixed(1)+"%" : u==="GW" ? (v<10? v.toFixed(2): v.toFixed(1)) : Math.round(v).toLocaleString("en-IN");
+const pct = (a,b) => (b/a-1)*100;
+/* Indicator 4 (RCO): clean share of what discoms buy (proxy until BEE figures) vs share required by law */
+const RCO = {"National":[23.2,21.5,22.9],"Assam":[22.8,21.5,23.4],"Bihar":[26.5,13.4,14.7],"Uttar Pradesh":[19.6,21.7,20.2],"Odisha":[34.1,28.4,26.1],"Maharashtra":[17.9,16.7,17.2],"Tamil Nadu":[18.5,12.4,17.7]};
+const RCO_REQ = {"2023":24.61,"2024":27.08,"2025":29.91,"2026":33.01,"2030":43.33};
+function rcoAt(g,y){ const i=Math.min(["2023","2024","2025","2026"].indexOf(y),2), yy=["2023","2024","2025"][i]; const v=RCO[g][i], req=RCO_REQ[yy]; return {v,req,gap:v-req,yy}; }
+
+/* ---------- shared ---------- */
+function seg(el, items, cur, on){
+  el.innerHTML = items.map(([v,l]) => `<button data-v="${v}" class="${v===cur?'on':''}">${l}</button>`).join("");
+  el.onclick = e => { const b = e.target.closest("button"); if(!b) return; on(b.dataset.v); };
+}
+function renderChrome(){
+  document.getElementById("versions").innerHTML = Object.entries(VERSIONS).map(([k,v])=>
+    `<button class="vbtn ${k===ver?'on':''}" role="tab" aria-selected="${k===ver}" data-v="${k}"><span class="vl">${k.toUpperCase()}</span><span><span class="vn">${v.n}</span><div class="vq">"${v.q}"</div></span></button>`).join("");
+  seg(document.getElementById("geoSeg"), GEOS.map(g=>[g, g==="National"?"India (all)":g]), geo, v=>{geo=v;render();});
+  seg(document.getElementById("yearSeg"), YEARS.map(y=>[y, y+(isEst(y)?'<span class="est">est.</span>':'')]), year, v=>{year=v;render();});
+  document.getElementById("intent").innerHTML = VERSIONS[ver].intent;
+  document.querySelectorAll(".ver").forEach(el=>el.classList.toggle("on", el.id==="v"+ver.toUpperCase()));
+  if(document.getElementById("notesH")) document.getElementById("notesH").textContent = `Version ${ver.toUpperCase()} · ${VERSIONS[ver].n}: notes for review`;
+  if(document.getElementById("notesL")) document.getElementById("notesL").innerHTML = VERSIONS[ver].notes.map((n,i)=>`<li data-n="${i+1}">${n}</li>`).join("");
+}
+document.getElementById("versions").onclick = e => { const b=e.target.closest(".vbtn"); if(!b) return; ver=b.dataset.v; try{ history.replaceState(null,"","#"+ver); }catch(_){} render(); };
+
+const NS = "http://www.w3.org/2000/svg";
+function S(tag, attrs, parent, txt){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(txt!=null) e.textContent=txt; if(parent) parent.appendChild(e); return e; }
+function clear(svg){ svg.innerHTML = `<defs><pattern id="h_${svg.id}" width="5" height="5" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#c9c8c2" stroke-width="2"/></pattern></defs>`; }
+function niceMax(v){ if(v<=0) return 1; const p=Math.pow(10,Math.floor(Math.log10(v))); const n=v/p; return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p; }
+const tip = document.getElementById("tip");
+function showTip(e, html){ tip.innerHTML=html; tip.style.display="block"; const x=Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8); tip.style.left=x+"px"; tip.style.top=(e.clientY+14)+"px"; }
+function hideTip(){ tip.style.display="none"; }
+function tipOn(el, html){ el.addEventListener("mousemove",e=>showTip(e,html)); el.addEventListener("mouseleave",hideTip); }
+document.addEventListener("mouseover", e=>{ const t=e.target.closest("[data-tip]"); if(t){ t.onmousemove = ev=>showTip(ev,t.dataset.tip); t.onmouseleave=hideTip; } });
+// push overlapping labels apart; items have .y, returns items with .ly
+function dodge(items, gap, top, bottom){
+  const a=[...items].sort((p,q)=>p.y-q.y); a.forEach((it,i)=>{ it.ly = i? Math.max(it.y, a[i-1].ly+gap) : Math.max(it.y, top); });
+  const over = a.length ? a[a.length-1].ly - bottom : 0;
+  if(over>0) for(let i=a.length-1;i>=0;i--){ a[i].ly -= over; if(i && a[i].ly-a[i-1].ly>=gap) break; if(i) a[i-1].ly = Math.min(a[i-1].ly, a[i].ly-gap); }
+  return items;
+}
+
+/* =================== A: REPORT CARD =================== */
+function paceOf(s, y, unit){
+  const t=s["2030"], now=s[y]; if(t==null||now==null) return null;
+  const left=2030-(+y), need=(t-now)/left, n=+y-2023, rec=n>0?(now-s["2023"])/n:null;
+  const u = unit==="%" ? " pts" : " GW";
+  const f = v => unit==="%" ? v.toFixed(1) : (Math.abs(v)<10? v.toFixed(2): v.toFixed(1));
+  if(need<=0) return {cls:"good", st:"Already past 2030 projection", txt:`Projection for 2030 is ${fmt(t,unit)}${unit==="GW"?" GW":""}`};
+  if(rec==null) return {cls:"neu", st:"Needs +"+f(need)+u+" a year", txt:`2023 is the first year, so no recent pace yet`};
+  const r=rec/need;
+  return {cls: r>=1?"good": r>=.75?"neu":"bad", st: r>=1?"On pace for 2030": r>=.75?"Slightly slower than needed":"Slower than needed",
+    txt:`Recent pace <b>+${f(rec)}${u}/yr</b> · needed <b>+${f(need)}${u}/yr</b> to reach ${fmt(t,unit)}${unit==="GW"?" GW":""} by 2030`};
+}
+function bullet(o){
+  // o: {now, proj, max, target, base, lower, unit, est, refLine}
+  const svg=document.createElementNS(NS,"svg"); svg.setAttribute("viewBox","0 0 560 50"); svg.setAttribute("width","100%"); svg.id="b"+Math.random().toString(36).slice(2,7);
+  clear(svg);
+  const x0=6,x1=548, X=v=>x0+(x1-x0)*Math.max(0,v)/o.max;
+  S("rect",{x:x0,y:16,width:x1-x0,height:16,rx:3,fill:css("--line-2")},svg);
+  if(o.proj!=null && o.proj>o.now){ const r=S("rect",{x:X(o.now),y:16,width:X(o.proj)-X(o.now),height:16,fill:`url(#h_${svg.id})`,stroke:css("--ink-3"),"stroke-width":.75},svg);
+    tipOn(r,`<b>Still to go</b><br>${fmt(o.proj-o.now,o.unit)}${o.unit==="GW"?" GW":" pts"} to the 2030 projection`); }
+  const f=S("rect",{x:x0,y:16,width:Math.max(X(o.now)-x0,1.5),height:16,rx:3,fill:o.est?css("--ink-2"):css("--ink")},svg);
+  tipOn(f,`<b>${yl(year)}</b><br>${fmt(o.now,o.unit)}${o.unit==="GW"?" GW":o.unit==="g"?" gCO₂/kWh":""}`);
+  if(o.proj!=null){ const px=X(o.proj); S("line",{x1:px,x2:px,y1:10,y2:38,stroke:css("--ink-3"),"stroke-width":1.5},svg);
+    S("text",{x:Math.min(px,x1-2),y:8,"text-anchor":px>x1-60?"end":"middle","font-size":10.5,fill:css("--ink-3")},svg,`2030: ${fmt(o.proj,o.unit)}`); }
+  if(o.base!=null){ const bx=X(o.base); S("line",{x1:bx,x2:bx,y1:10,y2:38,stroke:css("--ink-3"),"stroke-width":1.5,"stroke-dasharray":"3 2"},svg);
+    S("text",{x:bx,y:8,"text-anchor":bx>x1-60?"end":"middle","font-size":10.5,fill:css("--ink-3")},svg,`2023: ${fmt(o.base,o.unit)}`); }
+  if(o.refLine!=null){ const rx=X(o.refLine.v); S("line",{x1:rx,x2:rx,y1:12,y2:36,stroke:css("--ink"),"stroke-width":1,"stroke-dasharray":"2 2"},svg);
+    S("text",{x:rx,y:47,"text-anchor":"middle","font-size":10.5,fill:css("--ink-2")},svg,o.refLine.l); }
+  if(o.target!=null){ const tx=X(o.target.v); const tri=S("path",{d:`M${tx-6} 45 L${tx} 35 L${tx+6} 45Z`,fill:"#fff",stroke:css("--ink"),"stroke-width":1.5},svg);
+    tipOn(tri,`<b>Target</b><br>${o.target.l}`); S("text",{x:tx+9,y:46,"font-size":10.5,fill:css("--ink")},svg,o.target.l); }
+  S("text",{x:x0,y:47,"font-size":10,fill:css("--ink-3")},svg,"0");
+  return svg;
+}
+function rowA(el, r){
+  const d=document.createElement("div"); d.className="brow";
+  d.innerHTML=`<div class="bl"><b>${r.label} <span class="info" data-tip="${r.tip}">i</span></b>
+      <div class="bv ${isEst(year)?"est":""}">${r.val}</div>
+      <span class="tag ${r.type==="Impact"?"impact":""}">${r.type}</span> <span class="muted">Indicator ${r.id}</span>${r.nat?' <span class="tag nat">National</span>':""}</div>
+    <div class="bc"></div>
+    <div><span class="status ${r.cls}">${r.cls==="good"?"✓":r.cls==="bad"?"!":"·"} ${r.st}</span><div class="pace">${r.txt||""}</div></div>`;
+  d.querySelector(".bc").appendChild(r.svg); el.appendChild(d);
+}
+function drawA(){
+  // Indicator 1: modelled extra cut vs SuCRIT goal (no measured value yet)
+  document.getElementById("aNdcBig").innerHTML = `21.7% <span style="font-size:18px;color:var(--ink-2);font-weight:600">modelled, by 2030</span>`;
+  document.getElementById("aNdcSub").innerHTML = `extra cut in emissions per rupee of GDP, beyond business as usual. SuCRIT's goal is about 15% by 2030. <b>Not measured yet:</b> the official figure waits for India's next climate report (BTR); these are WRI India modelling scenarios.${geo!=="National"?` <br><span class="muted">Same for every state: this goal is tracked for India only.</span>`:""}`;
+  const svg=document.getElementById("aNdc"); clear(svg);
+  const x0=8,x1=630, X=v=>x0+(x1-x0)*v/25;
+  S("rect",{x:x0,y:40,width:x1-x0,height:10,rx:5,fill:css("--line-2")},svg);
+  S("line",{x1:X(15),x2:X(15),y1:24,y2:62,stroke:css("--ink"),"stroke-width":2.5},svg);
+  S("text",{x:X(15),y:18,"text-anchor":"middle","font-size":12,"font-weight":700,fill:css("--ink")},svg,"SuCRIT goal ~15%");
+  [[7.4,"2025 · 7.4%"],[21.7,"2030 · 21.7%"]].forEach(([v,l])=>{ const c=S("circle",{cx:X(v),cy:45,r:9,fill:"#fff",stroke:css("--ink"),"stroke-width":1.6,"stroke-dasharray":"3 2.5"},svg);
+    tipOn(c,`<b>Modelled for ${l.slice(0,4)}</b><br>${v}% extra cut (scenario, not measured)`);
+    S("text",{x:X(v),y:24,"text-anchor":"middle","font-size":11.5,fill:css("--ink-2")},svg,l); });
+  [0,5,10,15,20,25].forEach(v=>S("text",{x:X(v),y:80,"text-anchor":v?(v===25?"end":"middle"):"start","font-size":10.5,fill:css("--ink-3")},svg,v+"%"));
+
+  document.getElementById("aTitle").textContent = `${name(geo)}, ${yl(year)}: status by indicator`;
+  const el=document.getElementById("aRows"); el.innerHTML="";
+  const g=D[geo], est=isEst(year);
+
+  // 2 capacity
+  let p=paceOf(g.total,year,"GW");
+  rowA(el,{id:"2",type:"Impact",label:"Clean power capacity",tip:"Solar + wind + hydro + biomass + nuclear installed.",val:`${fmt(g.total[year],"GW")}<small>GW</small>`,
+    svg:bullet({now:g.total[year],proj:g.total["2030"],max:niceMax(g.total["2030"]*1.08),unit:"GW",est}),...p});
+  // state policy target
+  const stt=STATE_TARGET[geo];
+  if(stt){ const sv=g[stt.src][year]; const need=(stt.v-sv)/Math.max(1,2027-(+year));
+    rowA(el,{id:"2",type:"State target",label:"Solar vs state policy target",tip:stt.txt,val:`${fmt(sv,"GW")}<small>GW solar</small>`,
+      svg:bullet({now:sv,max:niceMax(stt.v*1.15),unit:"GW",est,target:{v:stt.v,l:"22 GW by 2026-27"}}),
+      cls:"bad",st:`${Math.round(sv/stt.v*100)}% of the way to target`,txt:`Needs about +${need.toFixed(1)} GW a year to hit 22 GW by 2026-27`}); }
+  // 2A
+  p=paceOf(g.s2a,year,"%");
+  const tA = geo==="National" ? {v:50,l:"Target 50%"} : null;
+  if(geo==="National" && g.s2a[year]>=50) p={cls:"good",st:"Past the 50% target",txt:`Reached 50% ahead of 2030. Projection: ${fmt(g.s2a["2030"],"%")}`};
+  rowA(el,{id:"2A",type:"Analytical",label:"Share of capacity that's clean",tip:"Clean capacity ÷ all installed capacity.",val:fmt(g.s2a[year],"%"),
+    svg:bullet({now:g.s2a[year],proj:g.s2a["2030"],max:100,unit:"%",est,target:tA}),...p});
+  // 3
+  p=paceOf(g.gen,year,"%") || {cls:"neu",st:"No 2030 projection yet",txt:"State-level 2030 generation projections aren't in the sheet"};
+  rowA(el,{id:"3",type:"Impact",label:"Share of electricity that's clean",tip:"Clean generation ÷ total generation (ICED).",val:fmt(g.gen[year],"%"),
+    svg:bullet({now:g.gen[year],proj:g.gen["2030"],max:100,unit:"%",est,refLine:geo!=="National"?{v:D.National.gen[year],l:"India "+D.National.gen[year].toFixed(0)+"%"}:null}),...p});
+  // 3A
+  const ei=g.ei[year], e0=g.ei["2023"], ch=pct(e0,ei);
+  rowA(el,{id:"3A",type:"Tracking",label:"CO₂ per unit of electricity",tip:"Grid emission rate, CEA CO₂ Baseline Database v22.0. Lower is better.",val:`${fmt(ei)}<small>gCO₂/kWh</small>`,
+    svg:bullet({now:ei,base:year!=="2023"?e0:null,max:1000,unit:"g",est,refLine:geo!=="National"?{v:D.National.ei[year],l:"India "+Math.round(D.National.ei[year])}:null}),
+    cls: year==="2023"?"neu": ch<-0.5?"good": ch>0.5?"bad":"neu", st: year==="2023"?"Baseline year": ch<-0.5?`Getting cleaner (${ch.toFixed(1)}% vs 2023)`: ch>0.5?`Getting dirtier (+${ch.toFixed(1)}% vs 2023)`:"About the same as 2023",
+    txt:"Lower is better · no 2030 target set · in doubt: may be dropped (30 Sept notes)"});
+  // 4 RCO
+  const r4=rcoAt(geo,year), r0=rcoAt(geo,"2023");
+  rowA(el,{id:"4",type:"Outcome",label:"Clean power bought vs the law (RCO)",tip:"Clean share of what power companies (discoms) buy, against the share the law requires. Proxy values until official BEE figures arrive.",val:`${r4.v.toFixed(1)}%<small>bought · ${r4.yy}</small>`,
+    svg:bullet({now:r4.v,max:50,unit:"%",est:false,target:{v:r4.req,l:`Required ${r4.req}% (${r4.yy})`}}),
+    cls:r4.gap>=0?"good":"bad",st:r4.gap>=0?"Meets the required share":`${Math.abs(r4.gap).toFixed(1)} pts short of the law`,
+    txt:`Gap ${r0.gap>=0?"+":""}${r0.gap.toFixed(1)} pts in 2023 → ${r4.gap>=0?"+":""}${r4.gap.toFixed(1)} in ${r4.yy}${year==="2026"?" (2026 not available)":""} · rule rises to 43.3% by 2030 · proxy values, official BEE figures not in yet`});
+  // 2B
+  const b=g.s2b[year];
+  rowA(el,{id:"2B",type:"Impact",label:"Share of new capacity that's clean",tip:"Clean added ÷ net capacity added that year. Can exceed 100% when coal/gas plants close.",val:fmt(b,"%"),
+    svg:bullet({now:Math.min(b,150),max:150,unit:"%",est,refLine:{v:100,l:"100% = all new capacity clean"}}),
+    cls:"neu",st:"Neutral: no good/bad direction",txt:b>100?"Over 100% because old plants closed this year":"Jumps a lot year to year, so read with care"});
+  // 5 storage (national)
+  const yi=YEARS.indexOf(year), cumT=STO.nat.t.slice(0,yi+1).reduce((a,c)=>a+c,0), op=STO.nat.o[yi];
+  rowA(el,{id:"5",type:"Impact",nat:true,label:"Storage working",tip:"Operational battery storage vs all storage tendered since 2023 (batteries and pumped hydro, national).",val:`${op}<small>of ${cumT} GWh ordered</small>`,
+    svg:bullet({now:op,max:niceMax(cumT*1.05),unit:"GW",est,refLine:{v:cumT,l:`${cumT} GWh ordered`}}),
+    cls:"neu",st:`${(op/cumT*100).toFixed(1)}% of ordered is working`,txt:geo!=="National"?`Shown for India. ${geo}: ${STO.st[geo].t!=null?STO.st[geo].t+" GWh tendered in 2026":"none itemised"}.`:"No target set yet. Most orders are still being built."});
+
+  // summary
+  const lines=[];
+  const tc=pct(g.total["2023"],g.total[year]);
+  lines.push(`In ${yl(year)}, ${name(geo)} had ${fmt(g.total[year],"GW")} GW of clean power capacity${year!=="2023"?`, up ${tc.toFixed(0)}% since 2023`:""}.`);
+  lines.push(`${g.s2a[year].toFixed(0)}% of all power capacity is clean, but only ${g.gen[year].toFixed(0)}% of the electricity generated comes from clean sources.`);
+  if(year!=="2023") lines.push(`Grid emissions are ${Math.round(ei)} gCO₂ per kWh, ${ch<0?"down":"up"} ${Math.abs(ch).toFixed(1)}% since 2023.`);
+  const pc=paceOf(g.total,year,"GW"); if(pc && pc.cls!=="good" && year!=="2023") lines.push(`To reach the 2030 ${geo==="National"?"target":"plan"} of ${fmt(g.total["2030"],"GW")} GW, capacity growth needs to speed up.`);
+  { const r=rcoAt(geo,year); lines.push(`Power companies bought ${r.v.toFixed(1)}% clean power in ${r.yy}, against ${r.req}% required by law (proxy figures).`); }
+  if(geo==="National") lines.push(`Modelling suggests a 21.7% extra cut in emissions per rupee of GDP by 2030, above SuCRIT's ~15% goal; no measured figure is available yet.`);
+  document.getElementById("aSum").innerHTML = lines.map(l=>`<li>${l}</li>`).join("");
+}
+document.getElementById("copySum").onclick = async e => {
+  const t=[...document.querySelectorAll("#aSum li")].map(l=>l.textContent).join("\n");
+  try{ await navigator.clipboard.writeText(t); e.target.textContent="Copied ✓"; }catch(_){ e.target.textContent="Select text to copy"; }
+  setTimeout(()=>e.target.textContent="Copy text",1600);
+};
+
+/* =================== B: COMPARE =================== */
+const HCOLS=[
+  {k:"total",lab:"Clean capacity",dir:"GW, size only",d:0,f:v=>fmt(v,"GW")},
+  {k:"growth",lab:"Growth since 2023",dir:"higher better",d:1,f:v=>v==null?"—":(v>=0?"+":"")+v.toFixed(0)+"%"},
+  {k:"s2a",lab:"Clean share of capacity",dir:"2A · higher better",d:1,f:v=>v.toFixed(1)+"%"},
+  {k:"gen",lab:"Clean share of electricity",dir:"3 · higher better",d:1,f:v=>v.toFixed(1)+"%"},
+  {k:"ei",lab:"CO₂ per unit",dir:"3A · lower better",d:-1,f:v=>Math.round(v)},
+  {k:"rco",lab:"Clean buying vs the law",dir:"4 · pts vs required · higher better",d:1,f:v=>(v>=0?"+":"")+v.toFixed(1)},
+  {k:"s2b",lab:"Clean share of additions",dir:"2B · no direction",d:0,f:v=>v.toFixed(0)+"%"}
+];
+const RAMP=["#e6f0fc","#cde2fb","#9ec5f4","#6da7ec","#3987e5","#184f95"];
+function valB(g,k){ if(k==="rco") return rcoAt(g,year).gap; if(k==="growth") return year==="2023"?null:pct(D[g].total["2023"],D[g].total[year]); return D[g][k][year]; }
+function drawB(){
+  document.getElementById("bHeatTitle").textContent = `Six states, one view · ${yl(year)}`;
+  const col=HCOLS.find(c=>c.k===bSort);
+  const rows=[...STATES].sort((a,b)=>{ const va=valB(a,bSort), vb=valB(b,bSort); if(va==null) return 1; if(vb==null) return -1; return col.d===-1? va-vb : vb-va; });
+  const range={}; HCOLS.forEach(c=>{ const v=STATES.map(s=>valB(s,c.k)).filter(x=>x!=null); range[c.k]=[Math.min(...v),Math.max(...v)]; });
+  const cell=(g,c,ref)=>{ const v=valB(g,c.k); if(v==null) return `<td class="na" title="Baseline year">—</td>`;
+    if(!c.d||ref) return `<td class="${ref?"":"neu"}">${c.f(v)}</td>`;
+    const [lo,hi]=range[c.k]; let t=hi>lo?(v-lo)/(hi-lo):.5; if(c.d===-1) t=1-t;
+    const i=Math.min(5,Math.floor(t*5.999)); return `<td style="background:${RAMP[i]};color:${i>=4?"#fff":"#1c1c1a"}" data-tip="<b>${name(g)}</b> · ${c.lab}<br>${c.f(v)} · rank ${[...STATES].map(s=>valB(s,c.k)).sort((a,b)=>c.d===-1?a-b:b-a).indexOf(v)+1} of 6">${c.f(v)}</td>`; };
+  document.getElementById("heat").innerHTML =
+    `<thead><tr><th>State</th>${HCOLS.map(c=>`<th data-k="${c.k}" class="${c.k===bSort?"sorted":""}">${c.lab}${c.k===bSort?" ▾":""}<span class="dir">${c.dir}</span></th>`).join("")}</tr></thead>
+     <tbody><tr class="ref ${geo==="National"?"sel":""}" data-g="National"><td>India (reference)</td>${HCOLS.map(c=>cell("National",c,true)).join("")}</tr>
+     ${rows.map(g=>`<tr class="${g===geo?"sel":""}" data-g="${g}"><td>${g}</td>${HCOLS.map(c=>cell(g,c,false)).join("")}</tr>`).join("")}</tbody>`;
+  drawSlope(); drawBMix();
+}
+document.getElementById("heat").onclick = e => {
+  const th=e.target.closest("th[data-k]"); if(th){ bSort=th.dataset.k; if(["s2a","gen","ei"].includes(bSort)) document.getElementById("bSel").value=bSort; drawB(); return; }
+  const tr=e.target.closest("tr[data-g]"); if(tr){ geo=tr.dataset.g; render(); }
+};
+document.getElementById("bSel").onchange = drawSlope;
+function drawSlope(){
+  const k=document.getElementById("bSel").value, svg=document.getElementById("slope"); clear(svg);
+  const a="2023", b=year, same=a===b, lower=k==="ei";
+  const lab=document.getElementById("bSel").selectedOptions[0].text.replace(/ \(.+\)/,"");
+  document.getElementById("bSlopeTitle").textContent = `Who's moving fastest? ${lab}`;
+  document.getElementById("bSlopeSub").textContent = same ? "Pick a later year to see change since 2023" : `2023 → ${yl(b)}${lower?" · lower is better":""} · steeper = faster change`;
+  const all=GEOS.flatMap(g=>[D[g][k][a],D[g][k][b]]);
+  let lo=Math.min(...all), hi=Math.max(...all); if(lower){ lo=Math.floor(lo/100)*100; hi=Math.ceil(hi/100)*100; } else { lo=0; hi=niceMax(hi*1.05); }
+  const xa=165, xb=395, yt=24, yb=272, Y=v=>yb-(yb-yt)*(v-lo)/(hi-lo);
+  S("text",{x:xa,y:14,"text-anchor":"middle","font-size":12,"font-weight":600,fill:css("--ink-2")},svg,"2023");
+  S("text",{x:xb,y:14,"text-anchor":"middle","font-size":12,"font-weight":600,fill:css("--ink-2"),"font-style":isEst(b)?"italic":"normal"},svg,b+(isEst(b)?" est.":""));
+  [xa,xb].forEach(x=>S("line",{x1:x,x2:x,y1:yt-4,y2:yb+4,stroke:css("--line")},svg));
+  const f=v=>lower?Math.round(v):v.toFixed(0)+"%";
+  const items=GEOS.map(g=>({g, va:D[g][k][a], vb:D[g][k][b]}));
+  const L=dodge(items.map(i=>({i,y:Y(i.va)})),14,yt,yb), R=dodge(items.map(i=>({i,y:Y(i.vb)})),14,yt,yb);
+  const order=[...items].sort((p,q)=>(p.g===geo)-(q.g===geo));
+  order.forEach(it=>{
+    const sel=it.g===geo, nat=it.g==="National";
+    const c= sel? css("--accent") : nat? css("--ink") : css("--wire");
+    const ln=S("line",{x1:xa,y1:Y(it.va),x2:xb,y2:Y(it.vb),stroke:c,"stroke-width":sel?3:nat?1.5:2,"stroke-dasharray":nat&&!sel?"5 3":"none"},svg);
+    tipOn(ln,`<b>${name(it.g)}</b><br>2023: ${f(it.va)} → ${b}: ${f(it.vb)}`);
+    [[xa,it.va],[xb,it.vb]].forEach(([x,v])=>S("circle",{cx:x,cy:Y(v),r:sel?5:3.5,fill:c},svg));
+  });
+  L.forEach(({i,ly})=>{ const sel=i.g===geo; S("text",{x:xa-8,y:ly+4,"text-anchor":"end","font-size":11.5,"font-weight":sel?700:400,fill:css(sel?"--ink":"--ink-2")},svg,`${name(i.g)} ${f(i.va)}`); });
+  R.forEach(({i,ly})=>{ const sel=i.g===geo, d=i.vb-i.va;
+    const dt= same?"": lower? ` (${d<=0?"":"+"}${Math.round(d)})` : ` (${d>=0?"+":""}${d.toFixed(1)} pts)`;
+    S("text",{x:xb+8,y:ly+4,"font-size":11.5,"font-weight":sel?700:400,fill:css(sel?"--ink":"--ink-2")},svg,`${f(i.vb)} ${name(i.g)}${dt}`); });
+}
+function drawBMix(){
+  const svg=document.getElementById("bmix"); clear(svg);
+  document.getElementById("bMixTitle").textContent = `What each state's clean power is made of · ${yl(year)}`;
+  document.getElementById("bMixLegend").innerHTML = SRC.map(([k,l,c])=>`<span><i style="background:var(${c})"></i>${l}</span>`).join("");
+  const x0=110,x1=470,rh=36,y0=6;
+  GEOS.forEach((g,i)=>{ const y=y0+i*rh, sel=g===geo, tot=SRC.reduce((a,[k])=>a+(D[g][k][year]||0),0);
+    S("text",{x:x0-8,y:y+18,"text-anchor":"end","font-size":12.5,"font-weight":sel?700:400,fill:css(sel?"--ink":"--ink-2")},svg,name(g));
+    let acc=0; SRC.forEach(([k,l,c])=>{ const v=D[g][k][year]||0; if(!v) return; const w=(x1-x0)*v/tot;
+      const r=S("rect",{x:x0+(x1-x0)*acc/tot,y:y+4,width:Math.max(w-1,.5),height:22,fill:css(c),opacity:sel||geo==="National"?1:.55},svg);
+      tipOn(r,`<b>${name(g)} · ${l}</b><br>${fmt(v,"GW")} GW · ${(v/tot*100).toFixed(0)}% of clean capacity`);
+      if(w>34) S("text",{x:x0+(x1-x0)*acc/tot+w/2,y:y+19,"text-anchor":"middle","font-size":10.5,"font-weight":600,fill:"#fff","pointer-events":"none"},svg,Math.round(v/tot*100)+"%");
+      acc+=v; });
+    if(sel) S("rect",{x:x0-3,y:y+1,width:x1-x0+6,height:28,fill:"none",stroke:css("--ink"),"stroke-width":1.5,rx:4},svg);
+    S("text",{x:x1+10,y:y+19,"font-size":12,"font-weight":600,fill:css("--ink")},svg,`${fmt(tot,"GW")} GW`);
+    if(i===0) S("line",{x1:20,x2:540,y1:y+rh-2,y2:y+rh-2,stroke:css("--line")},svg);
+  });
+}
+
+/* =================== C: STORY =================== */
+function waffle(p, color, label){
+  const n=Math.round(p), c=15, gp=3; let cells="";
+  for(let i=0;i<100;i++){ const r=9-Math.floor(i/10), col=i%10; cells+=`<rect x="${col*(c+gp)}" y="${r*(c+gp)}" width="${c}" height="${c}" rx="2" fill="${i<n?color:"#ebeae6"}"/>`; }
+  return `<div class="waf"><svg width="177" height="177" viewBox="0 0 177 177" role="img" aria-label="${n} of 100">${cells}</svg><div class="wn" style="color:${color}">${n} <span style="font-size:15px;color:var(--ink-2);font-weight:600">in 100</span></div><div class="wl">${label}</div></div>`;
+}
+function drawC(){
+  const g=D[geo], G=name(geo), a=g.s2a[year], b=g.gen[year];
+  // 1
+  document.getElementById("c1h").textContent = `${G} has built more clean power than it uses`;
+  document.getElementById("c1w").innerHTML = waffle(a,css("--accent"),`of every 100 units of <b>power plant capacity</b> are clean (Indicator 2A)`) + waffle(b,css("--s-wind"),`of every 100 units of <b>electricity actually produced</b> are clean (Indicator 3)`)
+    + `<div style="align-self:center;max-width:260px;font-size:13px;color:var(--ink-2)"><div style="font-size:28px;font-weight:700;color:var(--ink)">${(a-b).toFixed(0)} pt gap</div>Clean plants make up ${a.toFixed(0)}% of capacity but produce ${b.toFixed(0)}% of electricity. ${geo!=="National"?`India: ${D.National.s2a[year].toFixed(0)}% vs ${D.National.gen[year].toFixed(0)}%.`:""}</div>`;
+  document.getElementById("c1c").textContent = `Solar only generates in daylight and wind varies by season, so a clean gigawatt produces less electricity than a coal plant running round the clock. Closing this gap depends on storage (chapter 4) and on how much coal is still running.`;
+  // 2 dumbbell
+  const s="2023", e=year, same=s===e;
+  const rows=SRC.map(([k,l,c])=>({k,l,c,v0:g[k][s]||0,v1:g[k][e]||0})).sort((p,q)=>(q.v1-q.v0)-(p.v1-p.v0));
+  const top=rows[0], totC=pct(g.total[s],g.total[e]);
+  document.getElementById("c2h").textContent = same ? `Where ${G}'s clean power comes from` : `${top.l} is doing most of the growing`;
+  document.getElementById("c2l").textContent = same ? "Pick a later year to see what changed since 2023." : `Clean capacity by source, 2023 → ${yl(e)}. ${G}'s total grew ${totC.toFixed(0)}%, from ${fmt(g.total[s],"GW")} to ${fmt(g.total[e],"GW")} GW.`;
+  const svg=document.getElementById("dumb"); clear(svg);
+  const mx=niceMax(Math.max(...rows.map(r=>Math.max(r.v0,r.v1)))*1.05), x0=90,x1=520, X=v=>x0+(x1-x0)*v/mx, rh=38, y0=26;
+  for(let i=0;i<=4;i++){ const v=mx*i/4, x=X(v); S("line",{x1:x,x2:x,y1:y0-8,y2:y0+rh*5-14,stroke:css("--line-2")},svg); S("text",{x,y:y0+rh*5,"text-anchor":"middle","font-size":10.5,fill:css("--ink-3")},svg,(Number.isInteger(v)?v:v.toFixed(1))+(i===4?" GW":"")); }
+  S("text",{x:x1+14,y:14,"font-size":10.5,"font-weight":600,fill:css("--ink-3")},svg,"growth");
+  rows.forEach((r,i)=>{ const y=y0+i*rh;
+    S("text",{x:x0-10,y:y+4,"text-anchor":"end","font-size":12.5,fill:css("--ink")},svg,r.l);
+    S("line",{x1:X(r.v0),x2:X(r.v1),y1:y,y2:y,stroke:css(r.c),"stroke-width":4,"stroke-linecap":"round",opacity:.45},svg);
+    const c0=S("circle",{cx:X(r.v0),cy:y,r:5.5,fill:"#fff",stroke:css(r.c),"stroke-width":2},svg); tipOn(c0,`<b>${r.l}, 2023</b><br>${fmt(r.v0,"GW")} GW`);
+    const c1=S("circle",{cx:X(r.v1),cy:y,r:6.5,fill:css(r.c)},svg); tipOn(c1,`<b>${r.l}, ${yl(e)}</b><br>${fmt(r.v1,"GW")} GW`);
+    S("text",{x:Math.max(X(r.v1),X(r.v0))+12,y:y+4,"font-size":11.5,"font-weight":600,fill:css("--ink")},svg,fmt(r.v1,"GW"));
+    const m = r.v0===0&&r.v1===0 ? "none yet" : r.v0===0 ? "new" : same ? "" : "×"+(r.v1/r.v0).toFixed(1);
+    S("text",{x:x1+14,y:y+4,"font-size":12,"font-weight":700,fill:css(m.startsWith("×")&&r.v1/r.v0>=1.5?"--ink":"--ink-3")},svg,m);
+  });
+  S("circle",{cx:x0+4,cy:y0+rh*5+16,r:4.5,fill:"#fff",stroke:css("--ink-2"),"stroke-width":1.5},svg); S("text",{x:x0+14,y:y0+rh*5+20,"font-size":11,fill:css("--ink-2")},svg,"2023");
+  S("circle",{cx:x0+64,cy:y0+rh*5+16,r:5,fill:css("--ink-2")},svg); S("text",{x:x0+74,y:y0+rh*5+20,"font-size":11,fill:css("--ink-2")},svg,yl(e));
+  svg.setAttribute("viewBox",`0 0 640 ${y0+rh*5+28}`);
+  document.getElementById("c2c").textContent = same ? "—" : `${top.l} added ${fmt(top.v1-top.v0,"GW")} GW since 2023, more than any other source. ${geo==="National"?"Hydro and nuclear barely moved, as they take years to build.":"Growth here follows the state's own solar policy and park approvals."}`;
+  // 3 emissions
+  const svg3=document.getElementById("cei"); clear(svg3);
+  const ser=[[geo,css("--ink"),false]]; if(geo!=="National") ser.push(["National",css("--ink-3"),true]);
+  const allv=ser.flatMap(([gg])=>YEARS.map(y=>D[gg].ei[y])), lo=Math.floor(Math.min(...allv)/50)*50-50, hi=Math.ceil(Math.max(...allv)/50)*50+50;
+  const ex0=50,ex1=470,eyb=190,eyt=16, EX=i=>ex0+(ex1-ex0)*i/3, EY=v=>eyb-(eyb-eyt)*(v-lo)/(hi-lo);
+  for(let v=lo; v<=hi; v+=50){ S("line",{x1:ex0,x2:ex1,y1:EY(v),y2:EY(v),stroke:css("--line-2")},svg3); if((v-lo)%100===0) S("text",{x:ex0-6,y:EY(v)+4,"text-anchor":"end","font-size":10.5,fill:css("--ink-3")},svg3,v); }
+  YEARS.forEach((y,i)=>S("text",{x:EX(i),y:eyb+16,"text-anchor":"middle","font-size":11.5,fill:css(y===year?"--ink":"--ink-2"),"font-weight":y===year?700:400,"font-style":isEst(y)?"italic":"normal"},svg3,y+(isEst(y)?" est.":"")));
+  ser.forEach(([gg,c,ref])=>{ const sv=D[gg].ei;
+    S("polyline",{points:YEARS.map((y,i)=>`${EX(i)},${EY(sv[y])}`).join(" "),fill:"none",stroke:c,"stroke-width":ref?1.5:2.5,"stroke-dasharray":ref?"5 3":"none"},svg3);
+    if(!ref) YEARS.forEach((y,i)=>{ const ci=S("circle",{cx:EX(i),cy:EY(sv[y]),r:y===year?6:4,fill:c,stroke:"#fff","stroke-width":2},svg3); tipOn(ci,`<b>${name(gg)}, ${y}</b><br>${Math.round(sv[y])} gCO₂/kWh`); });
+    S("text",{x:EX(3)+10,y:EY(sv["2026"])+4,"font-size":11.5,"font-weight":ref?400:600,fill:c},svg3,`${name(gg)} ${Math.round(sv["2026"])}`);
+  });
+  const e0=g.ei["2023"], e1=g.ei[year], ch=pct(e0,e1);
+  // annotation box on the right
+  S("text",{x:640-8,y:60,"text-anchor":"end","font-size":34,"font-weight":700,fill:css(year==="2023"?"--ink":ch<0?"--good":"--bad")},svg3, year==="2023"?Math.round(e0):(ch<0?"−":"+")+Math.abs(ch).toFixed(1)+"%");
+  S("text",{x:640-8,y:80,"text-anchor":"end","font-size":12,fill:css("--ink-2")},svg3, year==="2023"?"gCO₂ per kWh in 2023": `since 2023 (${ch<0?"cleaner":"dirtier"})`);
+  if(year!=="2023"){ S("line",{x1:EX(0),x2:EX(YEARS.indexOf(year)),y1:EY(e0),y2:EY(e0),stroke:css("--ink-3"),"stroke-dasharray":"2 3"},svg3);
+    const xi=EX(YEARS.indexOf(year)); S("line",{x1:xi,x2:xi,y1:EY(e0),y2:EY(e1),stroke:css(ch<0?"--good":"--bad"),"stroke-width":2,"marker-end":""},svg3); }
+  document.getElementById("c3h").textContent = year==="2023" ? `${G}'s grid: the 2023 starting point` : ch<0 ? `${G}'s grid is getting cleaner, slowly` : `${G}'s grid got dirtier`;
+  document.getElementById("c3c").textContent = geo==="Bihar" ? "Bihar buys most of its power from coal-heavy central plants, so its rate rises even as it adds solar. Worth raising with the state team." : `Each kWh now releases ${Math.round(e1)} g of CO₂. ${geo!=="National"?`That's ${e1<D.National.ei[year]?"cleaner":"dirtier"} than the India average of ${Math.round(D.National.ei[year])}.`:"Most of the drop comes from solar growth in the last two years."}`;
+  // 4 storage
+  document.getElementById("c4nat").style.display = geo==="National"?"none":"inline-block";
+  const yi=YEARS.indexOf(year), cumT=STO.nat.t.slice(0,yi+1).reduce((p,c)=>p+c,0), op=STO.nat.o[yi], share=op/cumT*100, nOn=op>0?Math.max(1,Math.round(share)):0;
+  document.getElementById("c4h").textContent = `Lots of storage ordered, ${nOn<=1?"almost none":"very little"} working yet`;
+  const sv4=document.getElementById("csto"); clear(sv4); const cw=10.8, gp=1.8;
+  for(let i=0;i<100;i++){ const r=Math.floor(i/50), c=i%50; S("rect",{x:c*(cw+gp)+1,y:r*(cw+gp+4)+4,width:cw,height:cw+4,rx:1.5,fill:i<nOn?css("--s-hydro"):css("--line-2"),stroke:i<nOn?"none":css("--wire"),"stroke-width":.5},sv4); }
+  S("text",{x:1,y:70,"font-size":11.5,fill:css("--ink-2")},sv4,`${cumT} GWh ordered since 2023 · ${op} GWh working (${share.toFixed(1)}%), ${yl(year)}`);
+  document.getElementById("c4c").textContent = geo==="National" ? "For every 100 units of storage ordered, about "+Math.round(share)+" are running. Tenders surged in 2024–25, so most projects are still under construction." : `${geo} (context only): ${STO.st[geo].t!=null?STO.st[geo].t+" GWh tendered":"no tenders itemised"}, ${STO.st[geo].o!=null?(STO.st[geo].o<1?Math.round(STO.st[geo].o*1000)+" MWh":STO.st[geo].o+" GWh")+" working":"none listed as working"}.`;
+  // 5 road
+  document.getElementById("c5nat").style.display = geo==="National"?"none":"inline-block";
+  const sv5=document.getElementById("road"); clear(sv5);
+  const gx0=40,gx1=920, GX=v=>gx0+(gx1-gx0)*v/25, gy=70;
+  S("rect",{x:gx0,y:gy-5,width:gx1-gx0,height:10,rx:5,fill:css("--line-2")},sv5);
+  [0,5,10,15,20,25].forEach(v=>S("text",{x:GX(v),y:gy+34,"text-anchor":v?(v===25?"end":"middle"):"start","font-size":11,fill:css("--ink-3")},sv5,v+"%"));
+  S("line",{x1:GX(15),x2:GX(15),y1:gy-34,y2:gy+16,stroke:css("--ink"),"stroke-width":3},sv5);
+  S("text",{x:GX(15),y:gy-42,"text-anchor":"middle","font-size":15,"font-weight":700,fill:css("--ink")},sv5,"SuCRIT goal ~15% by 2030");
+  [[7.4,"Modelled 2025","7.4%"],[21.7,"Modelled 2030","21.7%"]].forEach(([v,l,t])=>{ const c=S("circle",{cx:GX(v),cy:gy,r:11,fill:"#fff",stroke:css("--ink"),"stroke-width":2,"stroke-dasharray":"4 3"},sv5);
+    tipOn(c,`<b>${l}</b><br>${t} extra cut vs business as usual (WRI India scenario, not measured)`);
+    S("text",{x:GX(v),y:gy-22,"text-anchor":"middle","font-size":15,"font-weight":700,fill:css("--ink")},sv5,t);
+    S("text",{x:GX(v),y:gy+54,"text-anchor":"middle","font-size":11.5,fill:css("--ink-2")},sv5,l); });
+  S("text",{x:gx0,y:gy+80,"font-size":12,fill:css("--ink-2")},sv5,"Hollow dashed pins = modelled scenarios. Measured value: not published yet.");
+  document.getElementById("c5c").textContent = `The models put India's extra cut at 21.7% by 2030, above the ~15% goal, but that assumes the net-zero path is followed and isn't credited to SuCRIT alone. For context, India's own climate promise (NDC) plans a 45% cut vs 2005 by 2030; the ${D.National.ndc[year]}% shown for ${yl(year)} in the sheet is that planned path, not an achievement.`;
+  // 5 RCO (Indicator 4)
+  { const svg=document.getElementById("crco"); clear(svg); const ys=["2023","2024","2025"], x0=70,x1=560, X=i=>x0+(x1-x0)*i/2, Y=v=>190-(v-10)/(36-10)*170;
+    [10,20,30].forEach(t=>{ S("line",{x1:x0-20,x2:x1+20,y1:Y(t),y2:Y(t),stroke:css("--line-2")},svg); S("text",{x:x0-28,y:Y(t)+4,"text-anchor":"end","font-size":11,fill:css("--ink-3")},svg,t+"%"); });
+    const act=RCO[geo], req=ys.map(y=>RCO_REQ[y]);
+    S("polyline",{points:req.map((v,i)=>X(i)+","+Y(v)).join(" "),fill:"none",stroke:css("--ink"),"stroke-width":2,"stroke-dasharray":"6 4"},svg);
+    S("polyline",{points:act.map((v,i)=>X(i)+","+Y(v)).join(" "),fill:"none",stroke:css("--accent"),"stroke-width":3.5},svg);
+    ys.forEach((y,i)=>{ const c=S("circle",{cx:X(i),cy:Y(act[i]),r:5,fill:css("--accent")},svg); tipOn(c,`<b>${y}</b><br>Bought ${act[i]}% · required ${req[i]}%`);
+      S("text",{x:X(i),y:Y(act[i])+(act[i]<req[i]?20:-10),"text-anchor":"middle","font-size":12,"font-weight":700,fill:css("--ink")},svg,act[i]+"%");
+      S("text",{x:X(i),y:Y(req[i])+(act[i]<req[i]?-9:16),"text-anchor":"middle","font-size":11,fill:css("--ink-2")},svg,req[i]+"%");
+      S("text",{x:X(i),y:206,"text-anchor":"middle","font-size":11,fill:css("--ink-3")},svg,y); });
+    S("text",{x:x1+24,y:Y(req[2])+4,"font-size":12,"font-weight":700,fill:css("--ink")},svg,"required");
+    S("text",{x:x1+24,y:Y(act[2])+4,"font-size":12,"font-weight":700,fill:css("--accent")},svg,"bought");
+    const g0=act[0]-req[0], g2=act[2]-req[2];
+    document.getElementById("c6h").textContent = g2<0 ? `${name(geo)}'s power companies are ${Math.abs(g2).toFixed(1)} points short of the clean-buying law` : `${name(geo)}'s power companies meet the clean-buying law`;
+    document.getElementById("c6c").textContent = `The required share rises about 2.5 points every year (29.9% in 2025, 43.3% by 2030). ${name(geo)}'s gap moved from ${g0>=0?"+":""}${g0.toFixed(1)} to ${g2>=0?"+":""}${g2.toFixed(1)} points between 2023 and 2025. These are proxy values; 2026 isn't available yet.`; }
+}
+
+/* ---------- notes ---------- */
+if(document.getElementById("toggleNotes")) document.getElementById("toggleNotes").onclick=e=>{document.body.classList.toggle("nonotes");e.target.textContent=document.body.classList.contains("nonotes")?"Show notes":"Hide notes";};
+document.addEventListener("click", e=>{ const p=e.target.closest(".pin"); if(!p) return;
+  document.querySelectorAll(".notes li").forEach(li=>li.classList.toggle("hl",li.dataset.n===p.dataset.n));
+  const li=document.querySelector(`.notes li[data-n="${p.dataset.n}"]`); li&&li.scrollIntoView({block:"nearest"}); });
+
+function render(){
+  renderChrome(); hideTip();
+  if(ver==="a") drawA(); else if(ver==="b") drawB(); else drawC();
+}
+window.addEventListener("hashchange",()=>{ const v=location.hash.slice(1); if(VERSIONS[v]&&v!==ver){ ver=v; render(); } });
+render();
+</script>
+</body>
+</html>
