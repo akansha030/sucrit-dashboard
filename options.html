@@ -658,6 +658,8 @@ body.shot .draft,body.shot .obar,body.shot .ocardx{display:none!important}
 .opk button{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:600}
 .opk button.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .opk button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.oref{display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding:10px 14px;border:1px dashed var(--line);border-radius:10px;font-size:13px;color:var(--ink-2);background:#fafaf8}.oref .tic{margin-top:2px}
+.o3t.g-ghg{color:var(--t-ghg)}
 .cfull{margin-top:12px;padding:10px 12px;background:#fafaf8;border-radius:8px;font-size:13.5px;line-height:1.55;color:var(--ink-2)}
 .cfull.why{background:var(--t-pol-bg);color:#3b2470}
 .decide{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
@@ -2135,7 +2137,7 @@ document.getElementById("optNotesTog").onclick=e=>{ const on=document.body.class
 /* --- generated sentences (Narrative, Balanced) --- */
 function headlineFor(t){
   const g=D[geo], G=name(geo), r=rcoAt(geo,year), sts=OCOL.map(c=>c.st(geo)[0]), ok=sts.filter(s=>s==="good").length;
-  if(t==="a") return `<b>${G} is on track on ${ok} of 5 comparable indicators in ${yl(year)}.</b> It has ${fmt(g.total[year],"GW")} GW of clean power${year!=="2023"?`, ${pct(g.total["2023"],g.total[year]).toFixed(0)}% more than in 2023`:""}. ${g.s2a[year].toFixed(0)}% of its power plants are clean, but only ${g.gen[year].toFixed(0)}% of the electricity it produces. Power companies bought ${r.v}% clean power against the ${r.req}% the law requires (${r.yy}, proxy).`;
+  if(t==="a") return `<b>India's emissions per rupee of GDP are modelled to fall 21.7% by 2030, ahead of SuCRIT's ~15% goal, but this isn't measured yet.</b> ${G} is on track on ${ok} of 5 comparable indicators in ${yl(year)}. It has ${fmt(g.total[year],"GW")} GW of clean power${year!=="2023"?`, ${pct(g.total["2023"],g.total[year]).toFixed(0)}% more than in 2023`:""}. ${g.s2a[year].toFixed(0)}% of its power plants are clean, but only ${g.gen[year].toFixed(0)}% of the electricity it produces. Power companies bought ${r.v}% clean power against the ${r.req}% the law requires (${r.yy}, proxy).`;
   if(t==="b"){ const short=STATES.filter(s=>rcoAt(s,year).gap<0).length, cleaner=STATES.filter(s=>year!=="2023"&&D[s].ei[year]<D[s].ei["2023"]).length;
     return `<b>Clean power is moving; buying and storage are not.</b> ${cleaner} of 6 states have a cleaner grid than in 2023, but ${short} of 6 buy less clean power than the law requires, and only ${(STO.nat.o[YEARS.indexOf(year)]/STO.nat.t.slice(0,YEARS.indexOf(year)+1).reduce((a,c)=>a+c,0)*100||0).toFixed(1)}% of the storage ordered nationally is working. Indicators 7 to 18 are mostly mock values until the Secretariat shares data.`; }
   return `<b>${G} has built more clean power than it uses, and must build ${(()=>{ const rec=(g.total["2026"]-g.total["2023"])/3, need=(g.total["2030"]-g.total["2026"])/4; return need>rec?(need/rec).toFixed(1)+"× faster":"at today's pace"; })()} to reach its 2030 plan.</b> Read the chapters below in order, or filter by theme.`;
@@ -2144,8 +2146,9 @@ const headBox=(t,cls="")=>`<div class="o-inj ohl ${cls}"><span class="ohl-k">${O
 
 /* --- Minimal: three numbers --- */
 function threeNums(){
-  const cs=OCOL.filter(c=>["cap","s2a","gen"].includes(c.k));
-  return `<div class="o-inj o3">${cs.map(c=>{ const v=c.val(geo), [s,tx]=c.st(geo); return `<div class="o3t g-${c.th}"><div class="o3l">${tIco(c.th)}${c.n}</div><div class="o3v">${v==null?"—":c.f(v)}</div><div class="o3s s-${s}">${sm(s,tx)}${tx}</div></div>`; }).join("")}</div>`;
+  const cs=OCOL.filter(c=>["s2a","gen"].includes(c.k));
+  const goal=`<div class="o3t g-ghg"><div class="o3l">${tIco("ghg")}Extra emissions cut by 2030</div><div class="o3v">21.7%</div><div class="o3s s-good">${sm("good","Modelled, ahead of the ~15% goal")}Modelled · ahead of the ~15% goal · India only</div></div>`;
+  return `<div class="o-inj o3">${goal}${cs.map(c=>{ const v=c.val(geo), [s,tx]=c.st(geo); return `<div class="o3t g-${c.th}"><div class="o3l">${tIco(c.th)}${c.n}</div><div class="o3v">${v==null?"—":c.f(v)}</div><div class="o3s s-${s}">${sm(s,tx)}${tx}</div></div>`; }).join("")}</div>`;
 }
 /* --- What changed: biggest movements since the previous year --- */
 function changeLog(){
@@ -2184,7 +2187,7 @@ function applyOpt(){
   const open=optOpen[OPT+ver], vEl=document.getElementById("v"+ver.toUpperCase());
   const top=html=>{ const anchor=ver==="a"?vEl.querySelector(".atool"):ver==="c"?vEl.querySelector(".shead"):vEl.querySelector("#bHead"); anchor.insertAdjacentHTML("afterend",html); };
   if(OPT==="a"){
-    if(ver==="a"){ top(threeNums()); if(!open){ fold("#srcCards,#aHero #aSide,#aFlow,#aTrack,#aDetail"); document.getElementById("aHero").insertAdjacentHTML("afterend",moreBtn("a","everything else (sources, flow, who is on track, all indicators)")); } }
+    if(ver==="a"){ top(threeNums()); if(!open){ fold(".ghgban,#srcCards,#aHero #aSide,#aFlow,#aTrack,#aDetail"); document.getElementById("aHero").insertAdjacentHTML("afterend",moreBtn("a","everything else (emissions detail, sources, flow, who is on track, all indicators)")); } }
     if(ver==="b"){ if(!open){ fold("#ophead,#bands,#bHead .ready"); document.getElementById("bX").insertAdjacentHTML("afterend",moreBtn("b","all 18 indicators")); } }
     if(ver==="c"){ if(!open){ fold("#vC .chap:not(#ch-1):not(#ch-3):not(#ch-5),#vC .lede,#vC .comment,#vC .legend,#vC .deeper"); minimalGroups(); document.querySelector("#vC .chap:last-of-type").insertAdjacentHTML("afterend",moreBtn("c","all 9 chapters")); } }
   }
@@ -2198,6 +2201,7 @@ function applyOpt(){
   if(OPT==="d"){ top(headBox(ver,"big")); document.querySelectorAll("#vC .comment").forEach(c=>{ c.insertAdjacentHTML("afterend",`<div class="o-inj cfull why"><b>Why it matters</b> · ${c.querySelector("span[id]").textContent}</div>`); }); fold("#vC .comment"); }
   if(OPT==="e"){
     top(statePick());
+    if(ver==="a"&&geo!=="National"){ fold(".ghgban"); document.querySelector(".ghgban").insertAdjacentHTML("afterend",`<div class="o-inj oref">${tIco("ghg")}<span><b>India's headline goal</b> (for reference): emissions per rupee of GDP modelled to fall 21.7% by 2030, ahead of the ~15% goal. It's tracked for India only, so it isn't on a state's page.</span></div>`); }
     if(ver==="a"){ fold("#aTrack .ocmp > .card:first-child"); if(!eCmp.v){ document.querySelectorAll("#oTab tbody tr").forEach(tr=>{ if(tr.dataset.g!==geo&&tr.dataset.g!=="National") tr.classList.add("o-rowhide"); }); }
       document.getElementById("aTrack").querySelector(".sec-h").insertAdjacentHTML("beforeend",`<button class="o-inj o-more sm" data-ecmp="1">${eCmp.v?"Hide other states":"Compare with other states (unranked)"}</button>`); }
   }
