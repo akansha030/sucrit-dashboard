@@ -652,6 +652,18 @@ body.shot .draft,body.shot .obar,body.shot .ocardx{display:none!important}
 .olist .up{color:var(--good);font-weight:700}.olist .dn{color:var(--bad);font-weight:700}
 .odue{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-2)}
 .odue ul{margin:4px 0 0;padding-left:18px}
+.olanding{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.olh h3{margin:0;font-size:20px}.olh p{margin:4px 0 14px;font-size:13.5px;color:var(--ink-2);max-width:80ch}
+.osl{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:860px){.osl{grid-template-columns:1fr 1fr}}@media (max-width:560px){.osl{grid-template-columns:1fr}}
+.osc{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:#fff;transition:box-shadow .15s,border-color .15s}
+.osc:hover{border-color:var(--ink-3);box-shadow:0 4px 14px rgba(28,28,26,.07)}
+.osc:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.osn{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700}
+.osv{font-size:13.5px;color:var(--ink-2)}.osv b{color:var(--ink);font-variant-numeric:tabular-nums}
+.osp{font-size:12.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:4px;margin-top:2px}
+.ospb{height:6px;border-radius:3px;background:var(--line-2);overflow:hidden}.ospb i{display:block;height:100%}
+.oindia{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line-2);font-size:13px;color:var(--ink-2)}
 .opick{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .opick h3{margin:0;font-size:16px}.opick p{margin:2px 0 10px;font-size:13px;color:var(--ink-2)}
 .opk{display:flex;flex-wrap:wrap;gap:8px}
@@ -2170,9 +2182,15 @@ function changeLog(){
       :`<li class="g-${x.th}">${tIco(x.th)}<span><b style="color:${GCOL[x.g]}">${name(x.g)}</b> · ${x.lab} <span class="${x.good?"up":"dn"}">${x.ch>0?"▲":"▼"} ${x.unit==="pts"?Math.abs(x.ch).toFixed(1)+" pts":Math.abs(x.ch).toFixed(1)+"%"}</span> <span class="muted">${f(x,x.a)} → ${f(x,x.b)}</span></span></li>`).join("")||`<li class="muted">Nothing moved in this topic.</li>`}</ol>
     <div class="odue"><b>Due next</b> <span class="oflag">Examples · to confirm</span><ul><li>Monthly · installed capacity by source (MNRE / ICED)</li><li>Yearly · CO₂ per unit (CEA CO₂ Baseline Database)</li><li>Yearly · clean-buying compliance (BEE)</li><li>As they happen · policy entries (Secretariat, Policy_changes sheet)</li></ul></div></div>`;
 }
-/* --- State-first: pick a state --- */
-function statePick(){
-  return `<div class="o-inj opick"><h3>Whose page is this?</h3><p>Pick a state. Its page shows only its own numbers, with India as a faint reference.</p><div class="opk">${STATES.map(g=>`<button data-pick="${g}" class="${g===geo?"on":""}"><span class="odot" style="background:${GCOL[g]}"></span>${g}</button>`).join("")}</div></div>`;
+/* --- State-first: India view is a minimal landing; the State filter is the only selector --- */
+function stateLanding(){
+  const n=D.National;
+  return `<div class="o-inj olanding"><div class="olh"><h3>Pick a state</h3><p>Each state's page shows its progress against its own 2030 plan. India isn't a page of its own in this option; it appears as a reference on each state's page. Pick a state here or in the State filter above.</p></div>
+    <div class="osl">${STATES.map(g=>{ const d=D[g], pl=d.total[year]/d.total["2030"]*100;
+      return `<button class="osc" data-pick="${g}"><span class="osn"><span class="odot" style="background:${GCOL[g]}"></span>${g}</span>
+        <span class="osv"><b>${fmt(d.total[year],"GW")} GW</b> clean capacity</span><span class="osv"><b>${d.gen[year].toFixed(1)}%</b> clean electricity</span>
+        <span class="osp"><span class="ospb"><i style="width:${Math.min(100,pl).toFixed(0)}%;background:${GCOL[g]}"></i></span>${pl.toFixed(0)}% of its 2030 plan</span></button>`; }).join("")}</div>
+    <p class="oindia"><b>India, for reference:</b> ${fmt(n.total[year],"GW")} GW clean capacity · ${n.gen[year].toFixed(1)}% clean electricity · ${(n.total[year]/n.total["2030"]*100).toFixed(0)}% of the 500 GW target · emissions cut 21.7% by 2030 (modelled)</p></div>`;
 }
 const moreBtn=(k,n)=>`<button class="o-inj o-more" data-more="${k}">Show ${n}</button>`;
 function fold(sel){ document.querySelectorAll(sel).forEach(e=>e.classList.add("o-fold")); }
@@ -2200,7 +2218,11 @@ function applyOpt(){
   if(OPT==="c"){ document.querySelectorAll("#vC .comment").forEach(c=>{ c.insertAdjacentHTML("afterend",`<div class="o-inj cfull"><b>Secretariat note (draft):</b> ${c.querySelector("span[id]").textContent}</div>`); }); fold("#vC .comment"); }
   if(OPT==="d"){ top(headBox(ver,"big")); document.querySelectorAll("#vC .comment").forEach(c=>{ c.insertAdjacentHTML("afterend",`<div class="o-inj cfull why"><b>Why it matters</b> · ${c.querySelector("span[id]").textContent}</div>`); }); fold("#vC .comment"); }
   if(OPT==="e"){
-    top(statePick());
+    if(geo==="National"&&(ver==="a"||ver==="c")){
+      // India isn't the focus here: a minimal landing that lists the states, India as a one-line reference
+      fold(ver==="a"?"#vA > :not(.atool)":"#vC > :not(.atool)"); fold(ver==="a"?"#vA .atb":"#vC .atool span");
+      document.getElementById(ver==="a"?"aPlace":"cPlace").textContent = ver==="a"?"State report cards":"State stories";
+      top(stateLanding()); return; }
     if(ver==="a"&&geo!=="National"){ fold(".ghgban"); document.querySelector(".ghgban").insertAdjacentHTML("afterend",`<div class="o-inj oref">${tIco("ghg")}<span><b>India's headline goal</b> (for reference): emissions per rupee of GDP modelled to fall 21.7% by 2030, ahead of the ~15% goal. It's tracked for India only, so it isn't on a state's page.</span></div>`); }
     if(ver==="a"){ fold("#aTrack .ocmp > .card:first-child"); if(!eCmp.v){ document.querySelectorAll("#oTab tbody tr").forEach(tr=>{ if(tr.dataset.g!==geo&&tr.dataset.g!=="National") tr.classList.add("o-rowhide"); }); }
       document.getElementById("aTrack").querySelector(".sec-h").insertAdjacentHTML("beforeend",`<button class="o-inj o-more sm" data-ecmp="1">${eCmp.v?"Hide other states":"Compare with other states (unranked)"}</button>`); }
