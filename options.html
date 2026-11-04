@@ -586,6 +586,41 @@ body:not(.ops) .fbreak{display:none}
 .flist{margin:4px 0 6px;padding-left:22px;font-size:13px}.flist li{margin:2px 0}.flist li::marker{color:#7c3aed;font-weight:700}.flist .arr{color:var(--ink-3);margin:0 6px}.flist .muted{margin-left:8px}
 @media (max-width:560px){.cgh{margin-top:22px}.ocell{min-width:74px}}
 #aTrack{margin-top:22px}
+/* A: sector chapters (electricity, transport) and the sector legend under the clouds */
+.chh{display:flex;align-items:center;gap:12px;margin:36px 0 12px;padding-bottom:12px;border-bottom:1px solid var(--line);scroll-margin-top:120px}
+.chh .chi{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 13%,#fff);color:var(--c)}
+.chh .chi svg{width:20px;height:20px}
+.chh h2{margin:0;font-size:20px;letter-spacing:-.01em;line-height:1.2}
+.chh p{margin:1px 0 0;color:var(--ink-2);font-size:13px}
+.trn{margin-top:0}
+.carrow{display:grid;grid-template-columns:118px 1fr;gap:16px;align-items:center;padding:12px 0}
+.carrow+.carrow{border-top:1px solid var(--line-2)}
+.carl b{display:block;font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.carl span{font-size:12px;color:var(--ink-2)}
+.cars{display:grid;grid-template-columns:repeat(10,1fr);gap:6px 8px}
+.cars svg{display:block;width:100%;height:auto;aspect-ratio:24/14;fill:var(--line-2)}
+.cars svg.on{fill:var(--sec-trn)}
+.cars.tgt svg.on{fill:color-mix(in srgb,var(--sec-trn) 18%,#fff);stroke:var(--sec-trn);stroke-width:1.1}
+.hbs{display:grid;gap:7px;margin-top:6px}
+.hb{display:grid;grid-template-columns:112px 1fr;gap:10px;align-items:center;font-size:12.5px}
+.hb.dim{opacity:.45}
+.hb.on>span:first-child{font-weight:700}
+.hbt{position:relative;display:flex;align-items:center;gap:6px;min-width:0;height:18px}
+.hbt i{display:block;height:14px;border-radius:3px;background:var(--sec-trn);flex:none}
+.hb.nat .hbt i{background:var(--ink-2)}
+.hbt b{font-weight:600;font-variant-numeric:tabular-nums}
+.hbt u{position:absolute;top:-4px;bottom:-4px;border-left:1.5px dashed var(--ink);text-decoration:none}
+.hbn{margin-top:10px;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+.hbn u{display:inline-block;width:0;height:12px;border-left:1.5px dashed var(--ink)}
+@media (max-width:560px){.carrow{grid-template-columns:1fr;gap:8px}}
+.kmixb{display:grid;gap:4px;margin-top:6px}
+.kmixb button{display:grid;grid-template-columns:16px 64px 1fr;gap:6px;align-items:center;font:inherit;font-size:12px;color:var(--ink);background:none;border:0;padding:3px 4px;margin:0 -4px;border-radius:6px;cursor:pointer;text-align:left}
+.kmixb button:hover{background:var(--line-2)}
+.kmixb button.dim{opacity:.4}
+.kmixb svg{width:14px;height:14px}
+.kmt{display:flex;align-items:center;gap:6px;min-width:0}
+.kmt i{display:block;height:14px;border-radius:3px;flex:none}
+.kmt b{font-weight:600;font-variant-numeric:tabular-nums}
 .gb-m{min-width:0}
 .secleg{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;justify-content:center;margin-top:2px}
 .secleg button,.secleg .sw{display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;background:none;border-radius:999px;padding:3px 9px;font:inherit;font-size:12px;color:var(--ink)}
@@ -732,6 +767,8 @@ body[data-opt="decide"] .versions,body[data-opt="decide"] .filters,body[data-opt
     <div class="gb-r"><div class="gb-rh" id="aPuffH"></div><div class="gb-puffs" id="aPuffs"></div></div>
   </section>
   <div class="scards" id="srcCards"></div>
+  <header class="chh" id="ch-elec" style="--c:var(--sec-elec)"><span class="chi"><svg aria-hidden="true"><use href="#t-pow"/></svg></span><div><h2>Electricity</h2><p>Clean power, the grid and storage</p></div></header>
+
   <section class="ahero" id="aHero">
     <div class="card mapcard">
       <div class="chart-h mhead"><div><h3 id="mapT"></h3></div><div class="seg" id="mapSeg"></div></div>
@@ -766,6 +803,18 @@ body[data-opt="decide"] .versions,body[data-opt="decide"] .filters,body[data-opt
         <span><svg width="26" height="10"><line x1="1" y1="5" x2="25" y2="5" stroke="#1c1c1a" stroke-width="1.6" stroke-dasharray="3 2"/></svg> Trend: 2026 estimate (hollow) and 2030 (dashed)</span>
       </div>
       <div id="aRows"></div>
+    </div>
+  </section>
+
+  <header class="chh" id="ch-trn" style="--c:var(--sec-trn)"><span class="chi"><svg aria-hidden="true"><use href="#t-trn"/></svg></span><div><h2>Transport</h2><p>Electric vehicles <span class="oflag" data-tip="Invented values to test the layout. Replace when VAHAN data is shared.">Mock</span></p></div></header>
+  <section class="grid2 trn">
+    <div class="card">
+      <div class="chart-h"><div><h3 id="trnCarsT"></h3><p>Each car is 5% of new sales</p></div></div>
+      <div id="trnCars"></div>
+    </div>
+    <div class="card">
+      <div class="chart-h"><div><h3 id="trnBarsT"></h3></div><div class="seg" id="trnSeg"></div></div>
+      <div id="trnBars"></div>
     </div>
   </section>
 
@@ -941,6 +990,7 @@ body[data-opt="decide"] .versions,body[data-opt="decide"] .filters,body[data-opt
   <symbol id="k-pause" viewBox="0 0 24 24"><g fill="currentColor"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></g></symbol>
   <symbol id="k-dl" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11M7 10l5 5 5-5M4.5 19.5h15"/></g></symbol>
   <symbol id="g-cloud" viewBox="0 0 24 14"><path d="M6 13.6h13a4.4 4.4 0 0 0 .6-8.7A6.4 6.4 0 0 0 7.4 4.1 4.8 4.8 0 0 0 6 13.6Z"/></symbol>
+<symbol id="v-car" viewBox="0 0 24 14"><path d="M1.6 10.2V8.3c0-.8.5-1.5 1.2-1.7l2.9-1L8.2 2.2c.4-.5 1-.8 1.7-.8h4.6c.7 0 1.3.3 1.7.8l2.7 3.3 2.4.6c.9.2 1.6 1.1 1.6 2v2.1c0 .5-.4.9-.9.9h-1.3a2.6 2.6 0 0 0-5.2 0H9.4a2.6 2.6 0 0 0-5.2 0H2.5c-.5 0-.9-.4-.9-.9Z"/><circle cx="6.8" cy="11.1" r="1.9"/><circle cx="17.1" cy="11.1" r="1.9"/></symbol>
 </defs></svg>
 
 <script>
@@ -1099,7 +1149,7 @@ function drawSrcCards(){
 
 function drawMap(){
   const svg=document.getElementById("aMap"), k=mapM, src=isSrc(k);
-  seg(document.getElementById("mapSeg"),MAPM.map(m=>[m[0],m[3]]),src?null:k,v=>{mapM=v;drawMap();drawSrcCards();});
+  seg(document.getElementById("mapSeg"),MAPM.map(m=>[m[0],m[3]]),src?null:k,v=>{mapM=v;drawMap();drawSrcCards();drawSide();});
   document.getElementById("mapT").textContent=`${mLabel(k)} in the six SuCRIT states`;
   if(!svg.dataset.built){
     let b=`<g transform="translate(${MAP_OX} ${MAP_OY})">`;
@@ -1147,7 +1197,7 @@ const badge=(ico,t)=>`<span class="kb t-${t}"><svg aria-hidden="true"><use href=
 function glanceHTML(){
   const n=D.National, yv=k=>YEARS.map(y=>n[k][y]), yi=YEARS.indexOf(year), cumT=STO.nat.t.slice(0,yi+1).reduce((a,c)=>a+c,0), op=STO.nat.o[yi];
   const tile=(ico,t,l,val,extra,spark)=>`<div class="kpi"><div class="khd">${badge(ico,t)}<span class="kl">${l}</span></div><div class="kv">${val}</div>${extra}${spark||""}</div>`;
-  const live=mixOf("National",year).filter(m=>m.v>0);
+  const live=mixOf("National",year).filter(m=>m.v>0), top=Math.max(...live.map(m=>m.p),.01);
   return `<div class="kpih"><h3>India at a glance</h3><span class="muted">${yl(year)}</span></div><div class="kpis">`
    +tile("t-pow","amb","Clean power capacity",`${cnt("k-cap",n.total[year],1)}<small>GW</small>`,
       kbar(n.total[year],500)+`<span class="kn">${Math.round(n.total[year]/5)}% of the 500 GW target for 2030</span>`+kdelta(yv("total"),1),kspark(yv("total"),500))
@@ -1160,8 +1210,8 @@ function glanceHTML(){
    +tile("k-batt","vio","Storage working",`${cnt("k-sto",op,1)}<small>GWh</small>`,
       kbar(op,cumT)+`<span class="kn">of ${cumT} GWh ordered since 2023</span>`,kspark(STO.nat.o))
    +`<div class="kpi"><div class="khd">${badge("k-layers","brn")}<span class="kl">What clean capacity is made of</span></div>
-      <div class="kmix">${live.map(m=>`<i style="flex:${m.p.toFixed(4)} 0 0;background:${SBG[m.k]}" data-tip="<b>${m.l}</b><br>${fmt(m.v,"GW")} GW · ${Math.round(m.p*100)}%"></i>`).join("")}</div>
-      <ul class="kmixl">${[...live].sort((a,b)=>b.v-a.v).map(m=>`<li>${ICON("i-"+m.k)}<span>${m.l}</span><b>${fmt(m.v,"GW")}</b><span class="muted">${Math.round(m.p*100)}%</span></li>`).join("")}</ul></div></div>`;
+      <div class="kmixb">${[...live].sort((a,b)=>b.v-a.v).map(m=>`<button class="${isSrc(mapM)&&mapM!==m.k?"dim":""}" data-src="${m.k}" aria-pressed="${mapM===m.k}" data-tip="<b>${m.l}</b><br>${fmt(m.v,"GW")} GW · show on the map">${ICON("i-"+m.k)}<span>${m.l}</span>
+        <span class="kmt"><i style="width:${(m.p/top*82).toFixed(1)}%;background:${SBG[m.k]}"></i><b>${Math.round(m.p*100)}%</b></span></button>`).join("")}</div></div></div>`;
 }
 function profileHTML(g){
   const d=D[g], n=D.National;
@@ -1233,8 +1283,9 @@ function drawAHero(){
   drawSrcCards(); drawMap(); drawSide(); drawFlow();
 }
 document.getElementById("aMap").addEventListener("click",e=>{ const t=e.target.closest("[data-g]"); if(!t) return; const g=t.dataset.g; geo=geo===g?"National":g; render(); });
-document.getElementById("srcCards").addEventListener("click",e=>{ const b=e.target.closest("[data-src]"); if(!b) return; mapM=b.dataset.src==="all"?"total":b.dataset.src; drawSrcCards(); drawMap(); });
-document.getElementById("aSide").addEventListener("click",e=>{ if(e.target.closest("[data-back]")){ geo="National"; render(); } });
+const pickSrc=e=>{ const b=e.target.closest("[data-src]"); if(!b) return false; const s=b.dataset.src; mapM=s==="all"?"total":s; drawSrcCards(); drawMap(); drawSide(); return true; };
+document.getElementById("srcCards").addEventListener("click",pickSrc);
+document.getElementById("aSide").addEventListener("click",e=>{ if(pickSrc(e)) return; if(e.target.closest("[data-back]")){ geo="National"; render(); } });
 document.getElementById("playY").onclick=togglePlay;
 document.getElementById("dlCsv").onclick=downloadCsv;
 
@@ -1250,6 +1301,7 @@ function cloudCut(f){
     CLOUD_ROWS.forEach(r=>r[1]/=tot); }
   const r=CLOUD_ROWS.find(r=>r[1]>=f); return r?r[0]:0;
 }
+document.getElementById("aSecLeg").addEventListener("click",e=>{ const b=e.target.closest("[data-ch]"); if(b) document.getElementById(b.dataset.ch).scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"}); });
 function drawGhgBanner(){
   document.getElementById("aNdcBig").innerHTML=`${cnt("g-cut",21.7,1)}% <span class="bsub">less by 2030</span>`;
   document.getElementById("aNdcSub").innerHTML=`Extra cut in emissions per rupee of GDP, beyond business as usual. <span class="chip dash">Modelled · beats the goal</span> <span class="info" data-tip="<b>SuCRIT's headline goal (Indicator 1)</b><br>Not measured yet: the official figure waits for India's next climate report (BTR). Both values are WRI India modelling scenarios on a net-zero path, so they aren't credited to SuCRIT alone. Tracked for India only.">i</span>`;
@@ -1268,15 +1320,34 @@ function drawGhgBanner(){
     +arr(372)+cl(468,BW*.85,"none","#1c1c1a",true,null)+sec("cc2",468,BW*(1-.217),SEC_SPLIT[2],"#55544f",true,"<b>2030, modelled</b><br>21.7% below business as usual, inside the 15% goal line")
     +`<text x="468" y="${(base-BW*.85*14/24-8).toFixed(1)}" font-size="12" font-weight="700" fill="#1c1c1a" text-anchor="middle">15% goal</text>`
     +lab(85,"Business as usual")+lab(278,"2025 · −7.4%")+lab(468,"2030");
-  document.getElementById("aSecLeg").innerHTML=SEC.map(([k,l,c])=>`<span class="sw" style="--c:${c}"><i></i>${l}</span>`).join("")+`<span class="muted">Split is illustrative</span>`;
+  document.getElementById("aSecLeg").innerHTML=SEC.map(([k,l,c])=>k==="oth"?`<span class="sw" style="--c:${c}"><i></i>${l}</span>`
+    :`<button style="--c:${c}" data-ch="ch-${k}" aria-label="${l}: jump to section"><i></i>${l}<svg aria-hidden="true"><use href="#i-chev"/></svg></button>`).join("")+`<span class="muted">Split is illustrative</span>`;
   const g=D[geo];
   document.getElementById("aPuffH").innerHTML=`<b>Measured CO₂ per kWh</b><span>1 puff = 100 g</span>`;
   document.getElementById("aPuffs").innerHTML=YEARS.map(y=>{ const v=g.ei[y]; return `<div class="gp${y===year?" on":""}" data-tip="<b>${name(geo)}, ${yl(y)}</b><br>${v!=null?Math.round(v)+" gCO₂/kWh":"no value"}">${v!=null?ghgIcon("clouds",v):""}<b>${v!=null?Math.round(v):"—"}</b><span>${isEst(y)?"2026e":y}</span></div>`; }).join("");
   countUp(document.getElementById("aNdcBig"));
 }
+/* ---- transport chapter: cars per 20 new sales, then states as bars (mock data, Indicators 8 and 9) ---- */
+let trnM="ev";
+function drawTrn(){
+  const yi=YEARS.indexOf(year), ZEV=IND.find(I=>I.id==="8"), BUS=IND.find(I=>I.id==="9"), v=ZEV.data[geo][yi];
+  const cars=(p,tgt)=>{ const n=Math.round(p/5); return `<div class="cars${tgt?" tgt":""}">${Array.from({length:20},(_,k)=>`<svg class="${k<n?"on":""}" aria-hidden="true"><use href="#v-car"/></svg>`).join("")}</div>`; };
+  document.getElementById("trnCarsT").textContent=`Of every 20 new vehicles sold in ${name(geo)}, how many are electric`;
+  document.getElementById("trnCars").innerHTML=
+     `<div class="carrow"><div class="carl"><b>${v.toFixed(1)}%</b><span>${yl(year)}</span></div>${cars(v)}</div>`
+    +`<div class="carrow"><div class="carl"><b>30%</b><span>${geo==="National"?"2030 target":"India's 2030 target"}</span></div>${cars(30,true)}</div>`;
+  seg(document.getElementById("trnSeg"),[["ev","EV sales"],["bus","E-buses"]],trnM,m=>{trnM=m;drawTrn();});
+  const I=trnM==="ev"?ZEV:BUS, places=(trnM==="ev"?GEOS:STATES).filter(g=>I.data[g][yi]!=null).sort((a,b)=>I.data[b][yi]-I.data[a][yi]);
+  const max=niceMax(Math.max(...places.map(g=>I.data[g][yi]),trnM==="ev"?30:0)), W=p=>(p/max*86).toFixed(1);
+  document.getElementById("trnBarsT").textContent=`${trnM==="ev"?"Share of new vehicles that's electric":"Share of new buses that's electric"}, ${yl(year)}`;
+  document.getElementById("trnBars").innerHTML=`<div class="hbs">${places.map(g=>{ const p=I.data[g][yi];
+      return `<div class="hb${g==="National"?" nat":""}${g===geo?" on":geo!=="National"&&g!=="National"?" dim":""}"><span>${name(g)}</span><span class="hbt"><i style="width:${W(p)}%"></i><b>${p.toFixed(1)}%</b>${trnM==="ev"?`<u style="left:${W(30)}%"></u>`:""}</span></div>`; }).join("")}</div>`
+    +`<div class="hbn">${trnM==="ev"?`<u></u>India's target: 30% of new sales by 2030`:"No target set · state-level only"}</div>`;
+}
 function drawA(){
   drawAHero();
   drawGhgBanner();
+  drawTrn();
 
   document.getElementById("aTitle").textContent = `${name(geo)}, ${yl(year)}: status by indicator`;
   const el=document.getElementById("aRows"); el.innerHTML="";
@@ -2205,13 +2276,13 @@ function applyOpt(){
   const open=optOpen[OPT+ver], vEl=document.getElementById("v"+ver.toUpperCase());
   const top=html=>{ const anchor=ver==="a"?vEl.querySelector(".atool"):ver==="c"?vEl.querySelector(".shead"):vEl.querySelector("#bHead"); anchor.insertAdjacentHTML("afterend",html); };
   if(OPT==="a"){
-    if(ver==="a"){ top(threeNums()); if(!open){ fold(".ghgban,#srcCards,#aHero #aSide,#aFlow,#aTrack,#aDetail"); document.getElementById("aHero").insertAdjacentHTML("afterend",moreBtn("a","everything else (emissions detail, sources, flow, who is on track, all indicators)")); } }
+    if(ver==="a"){ top(threeNums()); if(!open){ fold(".ghgban,#srcCards,#aHero #aSide,#aFlow,#aTrack,#aDetail"); document.getElementById("aHero").insertAdjacentHTML("afterend",moreBtn("a","everything else (emissions detail, sources, flow, who is on track, all indicators, transport)")); } }
     if(ver==="b"){ if(!open){ fold("#ophead,#bands,#bHead .ready"); document.getElementById("bX").insertAdjacentHTML("afterend",moreBtn("b","all 18 indicators")); } }
     if(ver==="c"){ if(!open){ fold("#vC .chap:not(#ch-1):not(#ch-3):not(#ch-5),#vC .lede,#vC .comment,#vC .legend,#vC .deeper"); minimalGroups(); document.querySelector("#vC .chap:last-of-type").insertAdjacentHTML("afterend",moreBtn("c","all 9 chapters")); } }
   }
   if(OPT==="b"){
     top(headBox(ver));
-    if(ver==="a"&&!open){ fold("#aFlow,#aDetail,#aTrack .ocmp"); document.getElementById("aTrack").insertAdjacentHTML("afterend",moreBtn("a","the comparison charts, the flow and all indicators")); }
+    if(ver==="a"&&!open){ fold("#aFlow,#aDetail,#aTrack .ocmp"); document.getElementById("aTrack").insertAdjacentHTML("afterend",moreBtn("a","the comparison charts, the flow, all indicators and transport")); }
     if(ver==="b"&&!open){ fold("#bands .band:nth-of-type(n+3)"); document.getElementById("bands").insertAdjacentHTML("afterend",moreBtn("b","the other themes")); }
     if(ver==="c"){ fold("#vC .comment"); }
   }
